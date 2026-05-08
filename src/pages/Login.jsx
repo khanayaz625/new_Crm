@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import API_BASE from '../config';
@@ -70,6 +70,13 @@ const Login = () => {
             Sign In
           </button>
         </form>
+
+        <div className="mt-8 pt-6 border-t border-slate-800 text-center">
+          <p className="text-slate-400 text-sm">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-blue-400 font-bold hover:text-blue-300 transition-colors">Sign Up as Admin</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
