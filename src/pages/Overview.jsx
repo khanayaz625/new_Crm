@@ -21,7 +21,8 @@ const Overview = ({ user }) => {
     followUp: 0,
     assigned: 0,
     unassigned: 0,
-    won: 0
+    won: 0,
+    called: 0
   });
   const [productivity, setProductivity] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,6 +49,7 @@ const Overview = ({ user }) => {
         assigned: leads.filter(l => l.assignedTo).length,
         unassigned: leads.filter(l => !l.assignedTo).length,
         won: leads.filter(l => l.status === 'Won').length,
+        called: leads.filter(l => l.assignedTo && l.status !== 'New').length,
       });
     } catch (err) {
       console.error(err);
@@ -119,6 +121,14 @@ const Overview = ({ user }) => {
           color="bg-red-500/10 text-red-400" 
           label="Awaiting assignment"
           onClick={() => handleBoxClick('assigned', 'unassigned')}
+        />
+        <StatBox 
+          title="Called Data" 
+          value={stats.called} 
+          icon={<PhoneCall />} 
+          color="bg-indigo-500/10 text-indigo-400" 
+          label="Interacted from assigned pool"
+          onClick={() => handleBoxClick('assigned', 'assigned')}
         />
         <StatBox 
           title="Won Deals" 
