@@ -296,50 +296,73 @@ const Leads = ({ user }) => {
           </table>
         </div>
 
-        {/* Mobile Card View */}
-        <div className="lg:hidden divide-y divide-slate-800">
+        {/* Mobile Boxy Grid View (No X-Scroll) */}
+        <div className="lg:hidden p-3 space-y-4 w-full max-w-full overflow-x-hidden">
           {loading ? (
             <div className="p-8 text-center text-slate-500">Loading leads...</div>
           ) : filteredLeads.length === 0 ? (
             <div className="p-8 text-center text-slate-500">No leads found.</div>
-          ) : filteredLeads.map((lead) => (
-            <div key={lead._id} className="p-4 space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="flex gap-3">
-                  <input type="checkbox" className="mt-1" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} />
-                  <div>
-                    <div className="font-bold text-slate-100">{lead.name}</div>
-                    <div className="text-xs text-slate-500 mt-0.5">{lead.course} • {lead.college || 'No College'}</div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {filteredLeads.map((lead) => (
+                <div 
+                  key={lead._id} 
+                  className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg active:scale-[0.98] transition-all"
+                >
+                  {/* Top Header: Name and Status */}
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <input 
+                        type="checkbox" 
+                        className="mt-1 shrink-0" 
+                        checked={selectedLeads.includes(lead._id)} 
+                        onChange={() => toggleSelectOne(lead._id)} 
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-slate-100 text-base truncate uppercase tracking-tight">{lead.name}</div>
+                        <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-0.5">{lead.course}</div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => { setCurrentLead(lead); setNewStatus(lead.status); setShowStatusModal(true); }}
+                      className="shrink-0 px-2.5 py-1 bg-slate-800 border border-slate-700 rounded-lg text-[9px] font-black text-slate-300 uppercase tracking-tighter"
+                    >
+                      {lead.status}
+                    </button>
+                  </div>
+
+                  {/* Middle Info: College & Assignment */}
+                  <div className="space-y-1 mb-4">
+                    <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-slate-700"></span>
+                      <span className="truncate">{lead.college || 'No College Specified'}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                      <span className="w-1 h-1 rounded-full bg-slate-700"></span>
+                      <span>Assigned: <span className="text-slate-300 font-medium">{lead.assignedTo ? lead.assignedTo.name : 'Not Assigned'}</span></span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Actions: Fixed width icons */}
+                  <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-800/60">
+                    <div className="flex gap-2 w-full">
+                      <a href={`tel:${lead.phone}`} className="flex-1 h-10 bg-blue-600/10 hover:bg-blue-600/20 flex items-center justify-center rounded-xl text-blue-400 border border-blue-600/20 transition-colors">
+                        <Phone size={16} />
+                      </a>
+                      <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="flex-1 h-10 bg-green-600/10 hover:bg-green-600/20 flex items-center justify-center rounded-xl text-green-400 border border-green-600/20 transition-colors">
+                        <MessageCircle size={16} />
+                      </a>
+                      {isAdmin && (
+                        <button onClick={() => handleDelete(lead._id)} className="flex-1 h-10 bg-red-600/10 hover:bg-red-600/20 flex items-center justify-center rounded-xl text-red-400 border border-red-600/20 transition-colors">
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <button 
-                  onClick={() => { setCurrentLead(lead); setNewStatus(lead.status); setShowStatusModal(true); }}
-                  className="px-3 py-1 bg-blue-600/10 border border-blue-600/20 rounded-full text-[10px] font-bold text-blue-400 uppercase tracking-wider"
-                >
-                  {lead.status}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-slate-800/50">
-                <div className="text-[10px] text-slate-500">
-                   {lead.assignedTo ? `Assigned: ${lead.assignedTo.name}` : 'Unassigned'}
-                </div>
-                <div className="flex gap-2">
-                  <a href={`tel:${lead.phone}`} className="w-10 h-10 bg-blue-600/10 flex items-center justify-center rounded-xl text-blue-400">
-                    <Phone size={18} />
-                  </a>
-                  <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 bg-green-600/10 flex items-center justify-center rounded-xl text-green-400">
-                    <MessageCircle size={18} />
-                  </a>
-                  {isAdmin && (
-                    <button onClick={() => handleDelete(lead._id)} className="w-10 h-10 bg-red-600/10 flex items-center justify-center rounded-xl text-red-400">
-                      <Trash2 size={18} />
-                    </button>
-                  )}
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       </div>
 
