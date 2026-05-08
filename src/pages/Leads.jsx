@@ -251,8 +251,10 @@ const Leads = ({ user }) => {
         </div>
       )}
 
+      {/* Leads List: Table for Desktop, Cards for Mobile */}
       <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left">
             <thead className="text-xs uppercase text-slate-500 border-b border-slate-800">
               <tr>
@@ -292,6 +294,52 @@ const Leads = ({ user }) => {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="lg:hidden divide-y divide-slate-800">
+          {loading ? (
+            <div className="p-8 text-center text-slate-500">Loading leads...</div>
+          ) : filteredLeads.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">No leads found.</div>
+          ) : filteredLeads.map((lead) => (
+            <div key={lead._id} className="p-4 space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="flex gap-3">
+                  <input type="checkbox" className="mt-1" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} />
+                  <div>
+                    <div className="font-bold text-slate-100">{lead.name}</div>
+                    <div className="text-xs text-slate-500 mt-0.5">{lead.course} • {lead.college || 'No College'}</div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => { setCurrentLead(lead); setNewStatus(lead.status); setShowStatusModal(true); }}
+                  className="px-3 py-1 bg-blue-600/10 border border-blue-600/20 rounded-full text-[10px] font-bold text-blue-400 uppercase tracking-wider"
+                >
+                  {lead.status}
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-800/50">
+                <div className="text-[10px] text-slate-500">
+                   {lead.assignedTo ? `Assigned: ${lead.assignedTo.name}` : 'Unassigned'}
+                </div>
+                <div className="flex gap-2">
+                  <a href={`tel:${lead.phone}`} className="w-10 h-10 bg-blue-600/10 flex items-center justify-center rounded-xl text-blue-400">
+                    <Phone size={18} />
+                  </a>
+                  <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="w-10 h-10 bg-green-600/10 flex items-center justify-center rounded-xl text-green-400">
+                    <MessageCircle size={18} />
+                  </a>
+                  {isAdmin && (
+                    <button onClick={() => handleDelete(lead._id)} className="w-10 h-10 bg-red-600/10 flex items-center justify-center rounded-xl text-red-400">
+                      <Trash2 size={18} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
