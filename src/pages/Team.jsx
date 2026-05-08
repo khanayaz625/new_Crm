@@ -35,6 +35,19 @@ const Team = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to remove this team member? All their data assignments will remain but they will lose access.')) return;
+    
+    try {
+      await axios.delete(`${API_BASE}/users/${id}`, {
+        headers: { 'x-auth-token': localStorage.getItem('token') }
+      });
+      fetchEmployees();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete user');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -106,7 +119,10 @@ const Team = () => {
             </div>
             <div className="mt-6 pt-6 border-t border-slate-800 w-full flex justify-around">
               <button className="text-slate-500 hover:text-white transition-all text-sm font-medium">Edit Profile</button>
-              <button className="text-red-500/70 hover:text-red-500 transition-all">
+              <button 
+                onClick={() => handleDelete(emp._id)}
+                className="text-red-500/70 hover:text-red-500 transition-all"
+              >
                 <Trash2 size={18} />
               </button>
             </div>
