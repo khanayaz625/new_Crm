@@ -36,14 +36,22 @@ const Team = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to remove this team member? All their data assignments will remain but they will lose access.')) return;
+    console.log('Attempting to delete user with ID:', id);
+    console.log('Using API_BASE:', API_BASE);
+
+    if (!window.confirm('Are you sure you want to remove this team member?')) return;
     
     try {
-      await axios.delete(`${API_BASE}/users/${id}`, {
+      const url = `${API_BASE}/users/${id}`;
+      console.log('Full Delete URL:', url);
+
+      await axios.delete(url, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
+      console.log('Delete command sent successfully');
       fetchEmployees();
     } catch (err) {
+      console.error('Frontend Delete Error:', err);
       alert(err.response?.data?.message || 'Failed to delete user');
     }
   };
