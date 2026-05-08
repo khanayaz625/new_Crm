@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Phone, CheckCircle2, User, Clock, MessageSquare } from 'lucide-react';
+import API_BASE from '../config';
 
 const Calls = () => {
   const [logs, setLogs] = useState([]);
@@ -12,7 +13,7 @@ const Calls = () => {
 
   const fetchLogs = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/leads/logs', {
+      const res = await axios.get(`${API_BASE}/leads/logs`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       setLogs(res.data);

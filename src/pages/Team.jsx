@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { UserPlus, Mail, Shield, Trash2 } from 'lucide-react';
+import API_BASE from '../config';
 
 const Team = () => {
   const [employees, setEmployees] = useState([]);
@@ -13,7 +14,7 @@ const Team = () => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/users/employees', {
+      const res = await axios.get(`${API_BASE}/users/employees`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       setEmployees(res.data);
@@ -25,7 +26,7 @@ const Team = () => {
   const handleAddEmployee = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/auth/register', newEmp);
+      await axios.post(`${API_BASE}/auth/register`, newEmp);
       setShowAdd(false);
       fetchEmployees();
       setNewEmp({ name: '', email: '', password: '', role: 'employee' });
