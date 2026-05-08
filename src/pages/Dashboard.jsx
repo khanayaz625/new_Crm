@@ -8,6 +8,7 @@ import Team from './Team';
 import Calls from './Calls';
 import DataRequests from './DataRequests';
 import { Bell, BellDot, X, Clock } from 'lucide-react';
+import API_BASE from '../config';
 
 const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -24,7 +25,7 @@ const Dashboard = () => {
 
   const fetchNotifications = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/notifications', {
+      const res = await axios.get(`${API_BASE}/notifications`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       setNotifications(res.data);
@@ -36,7 +37,7 @@ const Dashboard = () => {
 
   const markAsRead = async (id) => {
     try {
-      await axios.put(`http://localhost:5001/api/notifications/${id}`, {}, {
+      await axios.put(`${API_BASE}/notifications/${id}`, {}, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       fetchNotifications();

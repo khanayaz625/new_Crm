@@ -12,6 +12,7 @@ import {
   TrendingUp,
   History
 } from 'lucide-react';
+import API_BASE from '../config';
 
 const Overview = ({ user }) => {
   const [stats, setStats] = useState({
@@ -35,7 +36,7 @@ const Overview = ({ user }) => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/leads', {
+      const res = await axios.get(`${API_BASE}/leads`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       const leads = res.data || [];
@@ -57,7 +58,7 @@ const Overview = ({ user }) => {
 
   const fetchProductivity = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/users/productivity', {
+      const res = await axios.get(`${API_BASE}/users/productivity`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       setProductivity(res.data);
