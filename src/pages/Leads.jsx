@@ -342,15 +342,17 @@ const Leads = ({ user }) => {
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       {isAdmin && (
-                        <input 
-                          type="checkbox" 
-                          className="mt-1 shrink-0 w-4 h-4" 
-                          checked={selectedLeads.includes(lead._id)} 
-                          onChange={() => toggleSelectOne(lead._id)} 
-                        />
+                        <div className="pt-0.5 pr-2">
+                          <input 
+                            type="checkbox" 
+                            className="shrink-0 w-4 h-4 accent-blue-600" 
+                            checked={selectedLeads.includes(lead._id)} 
+                            onChange={() => toggleSelectOne(lead._id)} 
+                          />
+                        </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="font-bold text-slate-100 text-base truncate uppercase tracking-tight">{lead.name}</div>
+                        <div className="font-bold text-slate-100 text-sm md:text-base break-words uppercase tracking-tight leading-tight">{lead.name}</div>
                         <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-0.5">{lead.course}</div>
                       </div>
                     </div>
@@ -423,12 +425,12 @@ const Leads = ({ user }) => {
       {/* Status Update Modal */}
       {showStatusModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl animate-in zoom-in duration-200">
-            <div className="flex justify-between items-center p-6 border-b border-slate-800">
-              <h3 className="text-xl font-bold">Update Lead: {currentLead?.name}</h3>
-              <button onClick={() => setShowStatusModal(false)}><X size={24} className="text-slate-500" /></button>
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-4 md:p-6 border-b border-slate-800 shrink-0">
+              <h3 className="text-lg md:text-xl font-bold truncate pr-4">Update: {currentLead?.name}</h3>
+              <button onClick={() => setShowStatusModal(false)} className="shrink-0"><X size={24} className="text-slate-500 hover:text-white" /></button>
             </div>
-            <form onSubmit={handleUpdateStatus} className="p-6 space-y-6">
+            <form onSubmit={handleUpdateStatus} className="p-4 md:p-6 space-y-6 overflow-y-auto">
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">New Status</label>
                 <select className="w-full h-12" value={newStatus} onChange={e => setNewStatus(e.target.value)} required>
@@ -445,10 +447,10 @@ const Leads = ({ user }) => {
                   required
                 />
               </div>
-              <div className="flex gap-4 pt-4">
-                <button type="button" onClick={() => setShowStatusModal(false)} className="flex-1 px-4 py-3 border border-slate-800 rounded-xl">Cancel</button>
-                <button type="submit" disabled={updating} className="flex-1 btn-primary h-12">
-                  {updating ? <Loader2 className="animate-spin" /> : 'Save Update & Log'}
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowStatusModal(false)} className="flex-1 px-4 py-3 border border-slate-800 rounded-xl text-sm font-medium">Cancel</button>
+                <button type="submit" disabled={updating} className="flex-1 btn-primary h-12 text-sm whitespace-nowrap">
+                  {updating ? <Loader2 className="animate-spin mx-auto" /> : 'Save Update'}
                 </button>
               </div>
             </form>
