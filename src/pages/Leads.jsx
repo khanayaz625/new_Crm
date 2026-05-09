@@ -244,20 +244,20 @@ const Leads = ({ user }) => {
         </div>
       )}
 
-      {isAdmin && (
-        <div className="flex justify-end text-sm text-slate-400 items-center gap-2">
-          <span>Show:</span>
-          <select 
-            className="bg-slate-800 border border-slate-700 rounded px-2 py-1 outline-none"
-            value={leadsPerPage} 
-            onChange={(e) => setLeadsPerPage(e.target.value === 'All' ? 'All' : Number(e.target.value))}
-          >
-            <option value={100}>100 per page</option>
-            <option value={500}>500 per page</option>
-            <option value="All">All Leads</option>
-          </select>
-        </div>
-      )}
+      <div className="flex justify-end text-sm text-slate-400 items-center gap-2 mt-4">
+        <span>Show:</span>
+        <select 
+          className="bg-slate-800 border border-slate-700 rounded px-2 py-1 outline-none"
+          value={leadsPerPage} 
+          onChange={(e) => setLeadsPerPage(e.target.value === 'All' ? 'All' : Number(e.target.value))}
+        >
+          <option value={10}>10 per page</option>
+          <option value={50}>50 per page</option>
+          <option value={100}>100 per page</option>
+          {isAdmin && <option value={500}>500 per page</option>}
+          {isAdmin && <option value="All">All Leads</option>}
+        </select>
+      </div>
 
       {showFilters && (
         <div className="card grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 animate-in slide-in-from-top-2">
