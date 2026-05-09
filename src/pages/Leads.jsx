@@ -28,6 +28,8 @@ const Leads = ({ user }) => {
   // Selection & Bulk Actions
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [bulkEmployeeId, setBulkEmployeeId] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [leadsPerPage, setLeadsPerPage] = useState(user?.role === 'admin' ? 100 : 10);
 
   const location = useLocation();
 
@@ -200,8 +202,14 @@ const Leads = ({ user }) => {
     return matchesSearch && matchesStatus && matchesCourse && matchesCollege && matchesEmployee && matchesAssignment;
   });
 
+  const totalPages = leadsPerPage === 'All' ? 1 : Math.ceil(filteredLeads.length / leadsPerPage);
+  const paginatedLeads = leadsPerPage === 'All' ? filteredLeads : filteredLeads.slice((currentPage - 1) * leadsPerPage, currentPage * leadsPerPage);
+
   const courses = [...new Set(leads.map(l => l.course).filter(Boolean))];
   const colleges = [...new Set(leads.map(l => l.college).filter(Boolean))];
+
+  // Reset to page 1 when filters change
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, filters, leadsPerPage]);
 
   return (
     <div className="space-y-6">
@@ -222,17 +230,32 @@ const Leads = ({ user }) => {
       </div>
 
       {isAdmin && selectedLeads.length > 0 && (
-        <div className="bg-blue-600/10 border border-blue-600/30 p-4 rounded-2xl flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="bg-blue-600/10 border border-blue-600/30 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span className="text-blue-400 font-bold">{selectedLeads.length} Selected</span>
-            <select className="h-9 text-xs" value={bulkEmployeeId} onChange={(e) => setBulkEmployeeId(e.target.value)}>
+            <select className="h-9 text-xs bg-slate-800 border-slate-700 rounded-lg px-2" value={bulkEmployeeId} onChange={(e) => setBulkEmployeeId(e.target.value)}>
               <option value="">Assign to...</option>
               {employees.map(emp => <option key={emp._id} value={emp._id}>{emp.name}</option>)}
             </select>
-            <button onClick={handleBulkAssign} disabled={!bulkEmployeeId} className="h-9 px-4 bg-blue-600 text-white rounded-lg text-xs font-bold">Apply</button>
+            <button onClick={handleBulkAssign} disabled={!bulkEmployeeId} className="h-9 px-4 bg-blue-600 text-white rounded-lg text-xs font-bold disabled:opacity-50">Apply</button>
             <button onClick={handleBulkDelete} className="h-9 px-4 bg-red-600/10 text-red-400 border border-red-600/20 rounded-lg text-xs font-bold"><Trash2 size={14} className="inline mr-1" /> Delete</button>
           </div>
-          <button onClick={() => setSelectedLeads([])} className="text-slate-500 text-xs">Clear</button>
+          <button onClick={() => setSelectedLeads([])} className="text-slate-500 text-xs hover:text-white">Clear Selection</button>
+        </div>
+      )}
+
+      {isAdmin && (
+        <div className="flex justify-end text-sm text-slate-400 items-center gap-2">
+          <span>Show:</span>
+          <select 
+            className="bg-slate-800 border border-slate-700 rounded px-2 py-1 outline-none"
+            value={leadsPerPage} 
+            onChange={(e) => setLeadsPerPage(e.target.value === 'All' ? 'All' : Number(e.target.value))}
+          >
+            <option value={100}>100 per page</option>
+            <option value={500}>500 per page</option>
+            <option value="All">All Leads</option>
+          </select>
         </div>
       )}
 
@@ -258,7 +281,7 @@ const Leads = ({ user }) => {
           <table className="w-full text-left">
             <thead className="text-xs uppercase text-slate-500 border-b border-slate-800">
               <tr>
-                <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === filteredLeads.length} onChange={toggleSelectAll} /></th>
+                {isAdmin && <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === filteredLeads.length} onChange={toggleSelectAll} /></th>}
                 <th className="px-6 py-4">Lead Details</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Assigned To</th>
@@ -266,9 +289,9 @@ const Leads = ({ user }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {loading ? (<tr><td colSpan="5" className="text-center py-12">Loading...</td></tr>) : filteredLeads.map((lead) => (
+              {loading ? (<tr><td colSpan={isAdmin ? "5" : "4"} className="text-center py-12">Loading...</td></tr>) : paginatedLeads.map((lead) => (
                 <tr key={lead._id} className="hover:bg-slate-800/50">
-                  <td className="px-6 py-4"><input type="checkbox" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} /></td>
+                  {isAdmin && <td className="px-6 py-4"><input type="checkbox" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} /></td>}
                   <td className="px-6 py-4">
                     <div className="font-bold">{lead.name}</div>
                     <div className="text-xs text-slate-500">{lead.phone} | {lead.course}</div>
@@ -298,13 +321,19 @@ const Leads = ({ user }) => {
 
         {/* Mobile Boxy Grid View (No X-Scroll) */}
         <div className="lg:hidden p-3 space-y-4 w-full max-w-full overflow-x-hidden">
+          {isAdmin && paginatedLeads.length > 0 && (
+            <div className="flex items-center gap-2 px-1 mb-2">
+              <input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === filteredLeads.length} onChange={toggleSelectAll} className="w-4 h-4" />
+              <span className="text-sm text-slate-300 font-bold">Select All</span>
+            </div>
+          )}
           {loading ? (
             <div className="p-8 text-center text-slate-500">Loading leads...</div>
-          ) : filteredLeads.length === 0 ? (
+          ) : paginatedLeads.length === 0 ? (
             <div className="p-8 text-center text-slate-500">No leads found.</div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
-              {filteredLeads.map((lead) => (
+              {paginatedLeads.map((lead) => (
                 <div 
                   key={lead._id} 
                   className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg active:scale-[0.98] transition-all"
@@ -312,12 +341,14 @@ const Leads = ({ user }) => {
                   {/* Top Header: Name and Status */}
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <input 
-                        type="checkbox" 
-                        className="mt-1 shrink-0" 
-                        checked={selectedLeads.includes(lead._id)} 
-                        onChange={() => toggleSelectOne(lead._id)} 
-                      />
+                      {isAdmin && (
+                        <input 
+                          type="checkbox" 
+                          className="mt-1 shrink-0 w-4 h-4" 
+                          checked={selectedLeads.includes(lead._id)} 
+                          onChange={() => toggleSelectOne(lead._id)} 
+                        />
+                      )}
                       <div className="min-w-0 flex-1">
                         <div className="font-bold text-slate-100 text-base truncate uppercase tracking-tight">{lead.name}</div>
                         <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-0.5">{lead.course}</div>
@@ -364,6 +395,29 @@ const Leads = ({ user }) => {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between p-4 border-t border-slate-800">
+            <button 
+              disabled={currentPage === 1} 
+              onClick={() => setCurrentPage(p => p - 1)}
+              className="px-4 py-2 border border-slate-700 rounded-lg text-sm disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-400">
+              Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}
+            </span>
+            <button 
+              disabled={currentPage === totalPages} 
+              onClick={() => setCurrentPage(p => p + 1)}
+              className="px-4 py-2 border border-slate-700 rounded-lg text-sm disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Status Update Modal */}
