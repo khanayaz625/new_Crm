@@ -510,7 +510,7 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                 <div className="flex justify-between items-start gap-2 mb-2">
                   <div className="flex gap-3 min-w-0">
                     <div className="w-10 h-10 shrink-0 rounded-xl bg-slate-50 flex items-center justify-center text-lg font-black text-slate-400 border border-white shadow-inner">
-                      {lead.name.charAt(0)}
+                      {(lead.name || 'L').charAt(0)}
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-sm font-black text-slate-900 truncate uppercase leading-tight">{lead.name}</h3>

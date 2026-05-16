@@ -197,8 +197,8 @@ const Overview = ({ user, cache, setCache }) => {
                   <tr key={emp._id} className="hover:bg-slate-50/50 transition-all group">
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs shadow-sm border border-blue-100">
-                          {emp.name.charAt(0)}
+                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-black text-slate-500 uppercase">
+                          {(emp.name || 'E').charAt(0)}
                         </div>
                         <span className="font-bold text-slate-900">{emp.name}</span>
                       </div>

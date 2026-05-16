@@ -180,8 +180,8 @@ const Team = () => {
           <div key={emp._id} className="bg-white border border-slate-100 p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 flex flex-col items-center text-center relative overflow-hidden group hover:border-green-200 transition-all">
             <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 group-hover:bg-green-50 transition-colors"></div>
             
-            <div className="w-20 h-20 rounded-[2rem] bg-green-50 text-green-600 flex items-center justify-center text-2xl font-black mb-6 shadow-sm border border-green-100 relative z-10">
-              {emp.name.charAt(0)}
+            <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-xl font-black text-slate-400 border-2 border-white shadow-inner mb-4">
+              {(emp.name || 'E').charAt(0)}
             </div>
             <h3 className="font-black text-xl text-slate-900 tracking-tight relative z-10">{emp.name}</h3>
             <div className="flex items-center gap-2 text-slate-400 text-xs font-bold mt-2 relative z-10">
