@@ -144,7 +144,7 @@ const Calls = ({ user, cache, setCache }) => {
               <input
                 type="text"
                 placeholder="Search Lead..."
-                className="peer w-full bg-white border border-slate-100 rounded-xl pl-12 pr-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
+                className="peer w-full bg-white border border-slate-100 rounded-xl !pl-12 pr-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />

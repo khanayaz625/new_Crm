@@ -302,7 +302,7 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
             <input 
               type="text" 
               placeholder="Search Lead..." 
-              className="peer w-full pl-14 pr-4 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-sm font-medium placeholder:text-slate-400 outline-none" 
+              className="peer w-full !pl-14 pr-4 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-sm font-medium placeholder:text-slate-400 outline-none" 
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
             />
