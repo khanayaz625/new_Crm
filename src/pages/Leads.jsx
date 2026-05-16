@@ -301,7 +301,31 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
   const finalTotalPages = isOldBackend ? Math.ceil(displayLeads.length / leadsPerPage) : totalPages;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-10">
+      {/* Dynamic Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+            {filters.status ? `${filters.status} Leads` : 
+             filters.assigned === 'unassigned' ? 'Unassigned Leads' : 
+             filters.assigned === 'assigned' ? 'Assigned Leads' : 'Manage Leads'}
+          </h2>
+          <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-1 opacity-60">
+            {totalLeads} Records Synchronized
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex -space-x-2">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-black text-slate-400">
+                {String.fromCharCode(64 + i)}
+              </div>
+            ))}
+          </div>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Team</span>
+        </div>
+      </div>
+
       <div className="flex flex-col lg:flex-row justify-between gap-4 items-center">
         <div className="flex gap-3 w-full lg:flex-1">
           <div className="relative flex-1">

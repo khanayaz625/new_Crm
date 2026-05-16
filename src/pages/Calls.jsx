@@ -145,7 +145,7 @@ const Calls = ({ user, cache, setCache }) => {
               <div className="w-12 h-12 bg-green-600/10 rounded-2xl flex items-center justify-center">
                 <Phone className="text-green-600" size={24} />
               </div>
-              Interactions
+              {filterStatus ? `${filterStatus} Interactions` : 'Interactions'}
             </h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-full lg:flex-1 lg:max-w-4xl">
