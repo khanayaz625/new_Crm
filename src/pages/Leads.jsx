@@ -416,7 +416,9 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
               <tr>
                 <th className="px-6 py-5 w-16 text-center">Sr No.</th>
                 {isAdmin && <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} onChange={toggleSelectAll} /></th>}
-                <th className="px-6 py-4">Lead Details</th>
+                <th className="px-6 py-4">Lead Info</th>
+                <th className="px-6 py-4">Course</th>
+                <th className="px-6 py-4">College</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Assigned To</th>
                 <th className="px-6 py-4 text-right">Actions</th>
@@ -428,10 +430,24 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                   <td className="px-6 py-4 text-center font-bold text-slate-400">{(currentPage - 1) * (leadsPerPage === 'All' ? totalLeads : leadsPerPage) + index + 1}</td>
                   {isAdmin && <td className="px-6 py-4"><input type="checkbox" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} /></td>}
                   <td className="px-6 py-4">
-                    <div className="font-bold text-slate-900">{lead.name}</div>
-                    <div className="text-xs text-slate-500">{lead.phone}</div>
+                    <div className="font-bold text-slate-900 leading-tight">{lead.name}</div>
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mt-0.5">{lead.phone}</div>
                   </td>
-                  <td className="px-6 py-4"><span className="text-xs font-black uppercase text-blue-600 bg-blue-50 px-2 py-1 rounded-full">{lead.status}</span></td>
+                  <td className="px-6 py-4">
+                    <div className="text-xs font-bold text-slate-600">{lead.course || 'N/A'}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-xs font-bold text-slate-600 truncate max-w-[150px]">{lead.college || 'N/A'}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                      lead.status === 'Won' ? 'bg-green-50 text-green-600 border-green-100' :
+                      lead.status === 'Lost' ? 'bg-red-50 text-red-600 border-red-100' :
+                      'bg-blue-50 text-blue-600 border-blue-100'
+                    }`}>
+                      {lead.status}
+                    </span>
+                  </td>
                   <td className="px-6 py-4">{lead.assignedTo?.name || 'Unassigned'}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end items-center gap-2">
@@ -506,18 +522,25 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                   </div>
                 </div>
 
-                {/* Info Row: College & Status */}
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <div className="px-2 py-0.5 bg-green-50 rounded-lg border border-green-100/50">
-                    <p className="text-[8px] font-black text-green-600 uppercase tracking-widest">{lead.college || 'General'}</p>
-                  </div>
-                  <div className={`px-2 py-0.5 rounded-lg border ${
+                {/* Info Row: Badges */}
+                <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                  <div className={`px-2 py-0.5 rounded-lg border text-[8px] font-black uppercase tracking-widest ${
                     lead.status === 'Won' ? 'bg-green-50 border-green-100 text-green-600' :
                     lead.status === 'Lost' ? 'bg-red-50 border-red-100 text-red-600' :
                     'bg-blue-50 border-blue-100 text-blue-600'
                   }`}>
-                    <p className="text-[8px] font-black uppercase tracking-widest">{lead.status}</p>
+                    {lead.status}
                   </div>
+                  {lead.course && (
+                    <div className="px-2 py-0.5 bg-slate-50 rounded-lg border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                      {lead.course}
+                    </div>
+                  )}
+                  {lead.college && (
+                    <div className="px-2 py-0.5 bg-green-50 rounded-lg border border-green-100/50 text-[8px] font-black text-green-600 uppercase tracking-widest">
+                      {lead.college}
+                    </div>
+                  )}
                 </div>
 
                 {/* Unified Action Bar: 4 Icons */}
