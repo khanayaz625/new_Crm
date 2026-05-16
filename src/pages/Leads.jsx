@@ -299,19 +299,99 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
       <div className="flex flex-col lg:flex-row justify-between gap-4">
         <div className="flex gap-3 flex-1">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-            <input type="text" placeholder="Search..." className="w-full pl-10 h-11" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by name or phone..." 
+              className="w-full pl-12 h-12 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-sm font-medium" 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+            />
           </div>
-          <button onClick={() => setShowFilters(!showFilters)} className={`px-4 h-11 border rounded-xl flex items-center gap-2 ${showFilters ? 'bg-blue-600/10 border-blue-600 text-blue-400' : 'border-slate-800 text-slate-400'}`}>
-            <Filter size={18} />
+          <button 
+            onClick={() => setShowFilters(!showFilters)} 
+            className={`px-5 h-12 border-2 rounded-2xl flex items-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
+              showFilters 
+              ? 'bg-green-600 border-green-600 text-white shadow-lg shadow-green-600/30' 
+              : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200 shadow-sm'
+            }`}
+          >
+            <Filter size={16} strokeWidth={2.5} />
             <span>Filters</span>
           </button>
+          
+          <div className="hidden sm:flex items-center gap-2 bg-white border border-slate-100 px-4 rounded-2xl shadow-sm">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Show:</span>
+            <select 
+              className="h-8 bg-transparent border-none font-bold text-slate-900 text-xs outline-none"
+              value={leadsPerPage}
+              onChange={(e) => setLeadsPerPage(e.target.value)}
+            >
+              {[10, 25, 50, 100, 200, 500].map(n => <option key={n} value={n}>{n}</option>)}
+              <option value="All">All</option>
+            </select>
+          </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setShowAddLead(true)} className="btn-primary h-11"><UserPlus size={18} /> Add Lead</button>
-          {isAdmin && <button onClick={() => setShowImport(true)} className="px-4 h-11 bg-white border border-slate-200 rounded-xl flex items-center gap-2 text-slate-600 hover:bg-slate-50 transition-all shadow-sm"><FileUp size={18} /> Import</button>}
+          <button onClick={() => setShowAddLead(true)} className="btn-primary h-12 px-6">
+            <UserPlus size={18} strokeWidth={2.5} /> 
+            Add Lead
+          </button>
+          {isAdmin && (
+            <button onClick={() => setShowImport(true)} className="px-5 h-12 bg-white border border-slate-100 rounded-2xl flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+              <FileUp size={18} strokeWidth={2.5} /> 
+              Import
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Filter Options Drawer */}
+      {showFilters && (
+        <div className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-xl shadow-slate-200/40 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in slide-in-from-top-4 duration-300">
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Status</label>
+            <select className="w-full h-11" value={filters.status} onChange={e => setFilters({...filters, status: e.target.value})}>
+              <option value="">All Statuses</option>
+              {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Course</label>
+            <select className="w-full h-11" value={filters.course} onChange={e => setFilters({...filters, course: e.target.value})}>
+              <option value="">All Courses</option>
+              {courses.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block">College</label>
+            <select className="w-full h-11" value={filters.college} onChange={e => setFilters({...filters, college: e.target.value})}>
+              <option value="">All Colleges</option>
+              {colleges.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          {isAdmin && (
+            <div>
+              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Assigned Agent</label>
+              <select className="w-full h-11" value={filters.employeeId} onChange={e => setFilters({...filters, employeeId: e.target.value})}>
+                <option value="">All Agents</option>
+                {employees.map(emp => <option key={emp._id} value={emp._id}>{emp.name}</option>)}
+              </select>
+            </div>
+          )}
+          <div className="lg:col-span-4 flex justify-end">
+            <button 
+              onClick={() => {
+                setFilters({ status: '', course: '', college: '', assigned: 'all', employeeId: '' });
+                setSearchTerm('');
+              }}
+              className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:bg-red-50 px-4 py-2 rounded-lg transition-all"
+            >
+              Reset Filters
+            </button>
+          </div>
+        </div>
+      )}
 
       {isAdmin && selectedLeads.length > 0 && (
         <div className="bg-blue-600/10 border border-blue-600/30 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4">
@@ -335,6 +415,7 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
           <table className="w-full text-left">
             <thead className="text-[10px] uppercase text-slate-400 font-black tracking-widest border-b border-slate-100 bg-slate-50/50">
               <tr>
+                <th className="px-6 py-5 w-16 text-center">Sr No.</th>
                 {isAdmin && <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} onChange={toggleSelectAll} /></th>}
                 <th className="px-6 py-4">Lead Details</th>
                 <th className="px-6 py-4">Status</th>
@@ -343,8 +424,9 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {loading ? (<tr><td colSpan="5" className="text-center py-12">Loading...</td></tr>) : paginatedLeads.map(lead => (
+              {loading ? (<tr><td colSpan="6" className="text-center py-12">Loading...</td></tr>) : paginatedLeads.map((lead, index) => (
                 <tr key={lead._id}>
+                  <td className="px-6 py-4 text-center font-bold text-slate-400">{(currentPage - 1) * (leadsPerPage === 'All' ? totalLeads : leadsPerPage) + index + 1}</td>
                   {isAdmin && <td className="px-6 py-4"><input type="checkbox" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} /></td>}
                   <td className="px-6 py-4">
                     <div className="font-bold text-slate-900">{lead.name}</div>
@@ -373,11 +455,16 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
               <p className="text-slate-500 font-medium italic">No leads found in your queue.</p>
             </div>
           ) : (
-            paginatedLeads.map((lead) => (
+            paginatedLeads.map((lead, index) => (
               <div 
                 key={lead._id} 
                 className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-premium relative group transition-all hover:scale-[1.01] hover:border-green-200"
               >
+                {/* Serial Number Badge */}
+                <div className="absolute top-6 left-6 w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] font-black z-20 shadow-lg">
+                  {(currentPage - 1) * (leadsPerPage === 'All' ? totalLeads : leadsPerPage) + index + 1}
+                </div>
+
                 {/* Visual Accent Circle */}
                 <div className="absolute -top-4 -right-4 w-24 h-24 bg-green-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-2xl"></div>
 
