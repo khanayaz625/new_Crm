@@ -256,7 +256,9 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
       setNewLeadData({ name: '', email: '', phone: '', course: '', college: '' });
       fetchLeads();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to add lead');
+      console.error('Add Lead Error:', err);
+      const errorMsg = err.response?.data?.message || err.message || 'Server connection failed';
+      alert(`Could not add lead: ${errorMsg}`);
     } finally {
       setAddingLead(false);
     }
