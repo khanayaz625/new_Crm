@@ -711,13 +711,22 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                 </div>
               </div>
               <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Course / Interest</label>
-                <input 
-                  type="text" 
-                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium" 
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Course / Interest *</label>
+                <select 
+                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-900 outline-none focus:ring-2 focus:ring-green-500 transition-all appearance-none" 
                   value={newLeadData.course} 
                   onChange={e => setNewLeadData({...newLeadData, course: e.target.value})} 
-                />
+                  required
+                >
+                  <option value="">Select Course</option>
+                  {[
+                    'B.Tech (CS/IT)', 'B.Tech (Mechanical)', 'B.Tech (Civil)', 'B.Tech (Electrical)',
+                    'M.Tech', 'BCA', 'MCA', 'Diploma (CS/IT)', 'B.Sc (IT)', 'M.Sc (IT)',
+                    'Python Full Stack', 'Java Full Stack', 'Web Development (MERN)',
+                    'Data Science', 'AI & ML', 'Digital Marketing', 'Cyber Security',
+                    'Other Technical'
+                  ].map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">College / University</label>
