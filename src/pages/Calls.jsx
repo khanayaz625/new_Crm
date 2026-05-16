@@ -1,7 +1,7 @@
  // Calls.jsx - Clean implementation
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Phone, User, Clock, MessageSquare, Bell } from 'lucide-react';
+import { Phone, User, Clock, MessageSquare, Bell, Search, Loader2 } from 'lucide-react';
 import API_BASE from '../config';
 
 const Calls = ({ user, cache, setCache }) => {
