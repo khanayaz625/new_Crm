@@ -175,34 +175,68 @@ const Team = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {employees.map((emp) => (
-          <div key={emp._id} className="bg-white border border-slate-100 p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 flex flex-col items-center text-center relative overflow-hidden group hover:border-green-200 transition-all">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 group-hover:bg-green-50 transition-colors"></div>
-            
-            <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-xl font-black text-slate-400 border-2 border-white shadow-inner mb-4">
-              {(emp.name || 'E').charAt(0)}
-            </div>
-            <h3 className="font-black text-xl text-slate-900 tracking-tight relative z-10">{emp.name}</h3>
-            <div className="flex items-center gap-2 text-slate-400 text-xs font-bold mt-2 relative z-10">
-              <Mail size={14} className="text-slate-300" />
-              <span>{emp.email}</span>
-            </div>
-            <div className="mt-6 flex items-center gap-2 bg-slate-50 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border border-slate-100 relative z-10">
-              <Shield size={12} className="text-slate-300" />
-              {emp.role}
-            </div>
-            <div className="mt-10 pt-8 border-t border-slate-50 w-full flex justify-between relative z-10">
-              <button onClick={() => { setEditEmp(emp); setShowEdit(true); }} className="text-slate-900 font-black text-[10px] uppercase tracking-widest hover:text-green-600 transition-colors">Edit Profile</button>
-              <button 
-                onClick={() => handleDelete(emp._id)}
-                className="w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          </div>
-        ))}
+      <div className="card !p-0 overflow-hidden shadow-premium">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="text-[10px] uppercase text-slate-400 font-black tracking-widest border-b border-slate-100 bg-slate-50/50">
+              <tr>
+                <th className="px-8 py-5">Team Member</th>
+                <th className="px-8 py-5">Email Address</th>
+                <th className="px-8 py-5">System Role</th>
+                <th className="px-8 py-5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {employees.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-20 text-slate-400 font-medium italic">
+                    No team members found.
+                  </td>
+                </tr>
+              ) : employees.map((emp) => (
+                <tr key={emp._id} className="hover:bg-slate-50/50 transition-all group">
+                  <td className="px-8 py-5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs shadow-sm border border-blue-100">
+                        {(emp.name || 'E').charAt(0)}
+                      </div>
+                      <span className="font-bold text-slate-900">{emp.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5 text-sm font-medium text-slate-500">
+                    <div className="flex items-center gap-2">
+                      <Mail size={14} className="text-slate-300" />
+                      {emp.email}
+                    </div>
+                  </td>
+                  <td className="px-8 py-5">
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-50 text-slate-400 border border-slate-100">
+                      <Shield size={12} className="text-slate-300" />
+                      {emp.role}
+                    </span>
+                  </td>
+                  <td className="px-8 py-5 text-right">
+                    <div className="flex justify-end items-center gap-3">
+                      <button 
+                        onClick={() => { setEditEmp(emp); setShowEdit(true); }} 
+                        className="h-10 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
+                      >
+                        Edit Profile
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(emp._id)}
+                        className="w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                        title="Remove Member"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
