@@ -153,7 +153,7 @@ const Overview = ({ user, cache, setCache }) => {
           icon={<PhoneCall />} 
           color="bg-indigo-50 text-indigo-600" 
           label="Interacted"
-          onClick={() => handleBoxClick('assigned', 'assigned')}
+          onClick={() => navigate('/dashboard/calls')}
         />
         <StatBox 
           title="Won Deals" 

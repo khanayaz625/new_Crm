@@ -401,6 +401,16 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
           </div>
           {isAdmin && (
             <div>
+              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Allocation</label>
+              <select className="w-full h-11" value={filters.assigned} onChange={e => setFilters({...filters, assigned: e.target.value})}>
+                <option value="all">All Leads</option>
+                <option value="assigned">Assigned Only</option>
+                <option value="unassigned">Unassigned Only</option>
+              </select>
+            </div>
+          )}
+          {isAdmin && (
+            <div>
               <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Assigned Agent</label>
               <select className="w-full h-11" value={filters.employeeId} onChange={e => setFilters({...filters, employeeId: e.target.value})}>
                 <option value="">All Agents</option>
