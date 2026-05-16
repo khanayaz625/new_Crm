@@ -224,17 +224,7 @@ const Leads = ({ user }) => {
     finally { setImporting(false); }
   };
 
-  // No more client-side filtering, using leads directly
-  const paginatedLeads = leads;
-
-  // For course and college filters, we still need to get the unique values.
-  // Ideally these should also come from an API if there are "lakhs" of them.
-  // But for now let's keep them derived if possible, or assume they are manageable.
-  // Actually, we should probably have separate endpoints for these.
-  const [courses, setCourses] = useState([]);
-  const [colleges, setColleges] = useState([]);
-
-  // Fetch unique courses and colleges (maybe once on mount)
+  // Fetch unique courses and colleges
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
@@ -243,13 +233,36 @@ const Leads = ({ user }) => {
         });
         setCourses(res.data.courses || []);
         setColleges(res.data.colleges || []);
-      } catch (err) { console.error("Failed to fetch metadata", err); }
+      } catch (err) {
+        console.warn("Metadata API not available, deriving from current leads", err);
+        // Fallback: derive from leads currently in state
+        if (leads.length > 0) {
+          setCourses([...new Set(leads.map(l => l.course).filter(Boolean))].sort());
+          setColleges([...new Set(leads.map(l => l.college).filter(Boolean))].sort());
+        }
+      }
     };
     fetchMetadata();
-  }, []);
+  }, [leads.length === 0]); // Re-run if we have no leads (initial load)
 
   // Reset to page 1 when filters or search change
   useEffect(() => { setCurrentPage(1); }, [searchTerm, filters, leadsPerPage]);
+
+  // Hybrid Filtering: If the backend is old (returns all leads in an array), 
+  // we must filter on the client. If it's the new backend, we use the data as-is.
+  const isOldBackend = !totalPages || totalPages <= 1; // Simplistic check
+  const displayLeads = (isOldBackend && leads.length > 0) ? leads.filter(l => {
+    const matchesSearch = !searchTerm || l.name?.toLowerCase().includes(searchTerm.toLowerCase()) || l.phone?.includes(searchTerm);
+    const matchesStatus = !filters.status || l.status === filters.status;
+    const matchesCourse = !filters.course || l.course === filters.course;
+    const matchesCollege = !filters.college || l.college === filters.college;
+    const matchesEmployee = !filters.employeeId || (l.assignedTo?._id === filters.employeeId || l.assignedTo === filters.employeeId);
+    const matchesAssignment = filters.assigned === 'all' || (filters.assigned === 'assigned' && l.assignedTo) || (filters.assigned === 'unassigned' && !l.assignedTo);
+    return matchesSearch && matchesStatus && matchesCourse && matchesCollege && matchesEmployee && matchesAssignment;
+  }) : leads;
+
+  const paginatedLeads = isOldBackend ? displayLeads.slice((currentPage - 1) * leadsPerPage, currentPage * leadsPerPage) : leads;
+  const finalTotalPages = isOldBackend ? Math.ceil(displayLeads.length / leadsPerPage) : totalPages;
 
   return (
     <div className="space-y-6">
@@ -444,7 +457,7 @@ const Leads = ({ user }) => {
         </div>
 
         {/* Pagination Controls */}
-        {totalPages > 1 && (
+        {finalTotalPages > 1 && (
           <div className="flex items-center justify-between p-4 border-t border-slate-800">
             <button 
               disabled={currentPage === 1} 
@@ -454,10 +467,10 @@ const Leads = ({ user }) => {
               Previous
             </button>
             <span className="text-sm text-slate-400">
-              Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}
+              Page <span className="font-bold text-white">{currentPage}</span> of {finalTotalPages}
             </span>
             <button 
-              disabled={currentPage === totalPages} 
+              disabled={currentPage === finalTotalPages} 
               onClick={() => setCurrentPage(p => p + 1)}
               className="px-4 py-2 border border-slate-700 rounded-lg text-sm disabled:opacity-50"
             >
