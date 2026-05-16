@@ -376,33 +376,39 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
             paginatedLeads.map((lead) => (
               <div 
                 key={lead._id} 
-                className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 relative group transition-all hover:border-green-200"
+                className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-premium relative group transition-all hover:scale-[1.01] hover:border-green-200"
               >
+                {/* Visual Accent Circle */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-green-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-2xl"></div>
+
                 {/* Header: Name and Info */}
-                <div className="flex justify-between items-start mb-6">
-                  <div className="flex gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-xl font-black text-slate-400 border border-slate-100">
+                <div className="flex justify-between items-start mb-8 relative z-10">
+                  <div className="flex gap-5">
+                    <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-2xl font-black text-slate-400 border border-white shadow-inner">
                       {lead.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-slate-900 leading-tight uppercase truncate max-w-[140px]">{lead.name}</h3>
-                      <p className="text-xs font-bold text-slate-400 mt-1">{lead.phone}</p>
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                        <p className="text-[10px] font-black text-green-600 uppercase tracking-widest">{lead.college || 'General'}</p>
+                      <h3 className="text-xl font-black text-slate-900 leading-tight uppercase tracking-tight">{lead.name}</h3>
+                      <p className="text-sm font-bold text-slate-400 mt-1 flex items-center gap-2">
+                        <Phone size={12} className="text-slate-300" />
+                        {lead.phone}
+                      </p>
+                      <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 bg-green-50 rounded-full border border-green-100/50">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                        <p className="text-[10px] font-black text-green-600 uppercase tracking-widest">{lead.college || 'General Pool'}</p>
                       </div>
                     </div>
                   </div>
-                  <button onClick={() => handleDelete(lead._id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors">
-                    <Trash2 size={18} />
+                  <button onClick={() => handleDelete(lead._id)} className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                    <Trash2 size={20} />
                   </button>
                 </div>
 
-                {/* Primary Actions: Call & WhatsApp */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
+                {/* Primary Actions: High Impact Call & WhatsApp */}
+                <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
                   <a 
                     href={`tel:${lead.phone}`} 
-                    className="flex items-center justify-center gap-3 bg-green-600 text-white h-14 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-600/20 active:scale-95 transition-all"
+                    className="flex items-center justify-center gap-3 bg-gradient-to-br from-green-600 to-green-700 text-white h-14 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-600/30 active:scale-95 transition-all"
                   >
                     <Phone size={18} fill="currentColor" />
                     Call Now
@@ -411,28 +417,31 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                     href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-3 bg-white border-2 border-green-600 text-green-600 h-14 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
+                    className="flex items-center justify-center gap-3 bg-white border-2 border-slate-100 text-green-600 h-14 rounded-2xl font-black text-xs uppercase tracking-widest hover:border-green-600 hover:bg-green-50/30 active:scale-95 transition-all shadow-sm"
                   >
                     <MessageSquare size={18} strokeWidth={3} />
                     WhatsApp
                   </a>
                 </div>
 
-                {/* Status & Update Section */}
-                <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex items-center justify-between">
-                  <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Current Status</p>
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                      lead.status === 'Won' ? 'bg-green-50 text-green-600 border-green-100' :
-                      lead.status === 'Lost' ? 'bg-red-50 text-red-600 border-red-100' :
-                      'bg-blue-50 text-blue-600 border-blue-100'
-                    }`}>
-                      {lead.status}
-                    </span>
+                {/* Status & Update Section: Elevated Design */}
+                <div className="bg-slate-50/80 backdrop-blur-sm rounded-[1.5rem] p-5 border border-white flex items-center justify-between shadow-inner relative z-10">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Lead Status</p>
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${
+                        lead.status === 'Won' ? 'bg-green-500' :
+                        lead.status === 'Lost' ? 'bg-red-500' :
+                        'bg-blue-500'
+                      }`}></span>
+                      <span className="text-xs font-black text-slate-900 uppercase tracking-wide">
+                        {lead.status}
+                      </span>
+                    </div>
                   </div>
                   <button 
                     onClick={() => { setCurrentLead(lead); setShowStatusModal(true); }}
-                    className="h-10 px-4 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
+                    className="h-11 px-5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:shadow-md transition-all active:scale-95 shadow-sm"
                   >
                     Update
                   </button>
