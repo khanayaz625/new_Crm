@@ -5,6 +5,21 @@ import { Phone, User, Clock, MessageSquare, Bell } from 'lucide-react';
 import API_BASE from '../config';
 
 const Calls = ({ user }) => {
+  const [logs, setLogs] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filterDate, setFilterDate] = useState('');
+  const [filterStartDateTime, setFilterStartDateTime] = useState('');
+  const [filterEndDateTime, setFilterEndDateTime] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterEmployeeId, setFilterEmployeeId] = useState('');
+  const [showReminder, setShowReminder] = useState(false);
+  const [reminderLog, setReminderLog] = useState(null);
+  const [reminderDateTime, setReminderDateTime] = useState('');
+
+  const isAdmin = user?.role === 'admin';
+
   const [totalLogs, setTotalLogs] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
