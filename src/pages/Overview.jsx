@@ -37,20 +37,10 @@ const Overview = ({ user }) => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/leads`, {
+      const res = await axios.get(`${API_BASE}/leads/stats`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
-      const leads = res.data || [];
-      
-      setStats({
-        total: leads.length,
-        pending: leads.filter(l => l.status === 'New').length,
-        followUp: leads.filter(l => l.status === 'Follow Up').length,
-        assigned: leads.filter(l => l.assignedTo).length,
-        unassigned: leads.filter(l => !l.assignedTo).length,
-        won: leads.filter(l => l.status === 'Won').length,
-        called: leads.filter(l => l.assignedTo && l.status !== 'New').length,
-      });
+      setStats(res.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -106,22 +96,26 @@ const Overview = ({ user }) => {
           label="Scheduled for follow up"
           onClick={() => handleBoxClick('status', 'Follow Up')}
         />
-        <StatBox 
-          title="Assigned Data" 
-          value={stats.assigned} 
-          icon={<UserCheck />} 
-          color="bg-green-500/10 text-green-400" 
-          label="Distributed to team"
-          onClick={() => handleBoxClick('assigned', 'assigned')}
-        />
-        <StatBox 
-          title="Unassigned Data" 
-          value={stats.unassigned} 
-          icon={<UserMinus />} 
-          color="bg-red-500/10 text-red-400" 
-          label="Awaiting assignment"
-          onClick={() => handleBoxClick('assigned', 'unassigned')}
-        />
+        {isAdmin && (
+          <>
+            <StatBox 
+              title="Assigned Data" 
+              value={stats.assigned} 
+              icon={<UserCheck />} 
+              color="bg-green-500/10 text-green-400" 
+              label="Distributed to team"
+              onClick={() => handleBoxClick('assigned', 'assigned')}
+            />
+            <StatBox 
+              title="Unassigned Data" 
+              value={stats.unassigned} 
+              icon={<UserMinus />} 
+              color="bg-red-500/10 text-red-400" 
+              label="Awaiting assignment"
+              onClick={() => handleBoxClick('assigned', 'unassigned')}
+            />
+          </>
+        )}
         <StatBox 
           title="Called Data" 
           value={stats.called} 

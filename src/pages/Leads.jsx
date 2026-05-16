@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import API_BASE from '../config';
 import { 
   FileUp, 
   Search, 
@@ -44,6 +45,9 @@ const Leads = ({ user }) => {
   });
   const [showFilters, setShowFilters] = useState(false);
 
+  const [totalLeads, setTotalLeads] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
   useEffect(() => {
     if (location.state?.filterType) {
       const { filterType, value } = location.state;
@@ -66,9 +70,7 @@ const Leads = ({ user }) => {
   const [newStatus, setNewStatus] = useState('');
   const [remark, setRemark] = useState('');
   const [updating, setUpdating] = useState(false);
-
   const isAdmin = user?.role === 'admin';
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
   const statuses = [
     'New', 'Contacted', 'Interested', 'Not Interested', 'Busy', 
@@ -76,17 +78,40 @@ const Leads = ({ user }) => {
     'Follow Up', 'Meeting Scheduled', 'Qualified', 'Lost', 'Won', 'Archive'
   ];
 
+  // Fetch leads with server-side pagination and filters
   useEffect(() => {
-    fetchLeads();
+    const timer = setTimeout(() => {
+      fetchLeads();
+    }, 500); // Debounce search
+    return () => clearTimeout(timer);
+  }, [currentPage, leadsPerPage, searchTerm, filters]);
+
+  useEffect(() => {
     if (isAdmin) fetchEmployees();
   }, []);
 
   const fetchLeads = async () => {
+    setLoading(true);
     try {
+      const params = {
+        page: currentPage,
+        limit: leadsPerPage === 'All' ? 1000 : leadsPerPage,
+        search: searchTerm,
+        status: filters.status,
+        course: filters.course,
+        college: filters.college,
+        assigned: filters.assigned,
+        employeeId: filters.employeeId
+      };
+
       const res = await axios.get(`${API_BASE}/leads`, {
+        params,
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
-      setLeads(res.data);
+      
+      setLeads(res.data.leads);
+      setTotalLeads(res.data.total);
+      setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error(err);
     } finally {
@@ -165,8 +190,8 @@ const Leads = ({ user }) => {
   };
 
   const toggleSelectAll = () => {
-    if (selectedLeads.length === filteredLeads.length) setSelectedLeads([]);
-    else setSelectedLeads(filteredLeads.map(l => l._id));
+    if (selectedLeads.length === leads.length) setSelectedLeads([]);
+    else setSelectedLeads(leads.map(l => l._id));
   };
 
   const toggleSelectOne = (id) => {
@@ -192,23 +217,31 @@ const Leads = ({ user }) => {
     finally { setImporting(false); }
   };
 
-  const filteredLeads = leads.filter(l => {
-    const matchesSearch = l.name.toLowerCase().includes(searchTerm.toLowerCase()) || (l.phone && l.phone.includes(searchTerm));
-    const matchesStatus = !filters.status || l.status === filters.status;
-    const matchesCourse = !filters.course || l.course === filters.course;
-    const matchesCollege = !filters.college || l.college === filters.college;
-    const matchesEmployee = !filters.employeeId || (l.assignedTo && (l.assignedTo._id === filters.employeeId || l.assignedTo === filters.employeeId));
-    const matchesAssignment = filters.assigned === 'all' || (filters.assigned === 'assigned' && l.assignedTo) || (filters.assigned === 'unassigned' && !l.assignedTo);
-    return matchesSearch && matchesStatus && matchesCourse && matchesCollege && matchesEmployee && matchesAssignment;
-  });
+  // No more client-side filtering, using leads directly
+  const paginatedLeads = leads;
 
-  const totalPages = leadsPerPage === 'All' ? 1 : Math.ceil(filteredLeads.length / leadsPerPage);
-  const paginatedLeads = leadsPerPage === 'All' ? filteredLeads : filteredLeads.slice((currentPage - 1) * leadsPerPage, currentPage * leadsPerPage);
+  // For course and college filters, we still need to get the unique values.
+  // Ideally these should also come from an API if there are "lakhs" of them.
+  // But for now let's keep them derived if possible, or assume they are manageable.
+  // Actually, we should probably have separate endpoints for these.
+  const [courses, setCourses] = useState([]);
+  const [colleges, setColleges] = useState([]);
 
-  const courses = [...new Set(leads.map(l => l.course).filter(Boolean))];
-  const colleges = [...new Set(leads.map(l => l.college).filter(Boolean))];
+  // Fetch unique courses and colleges (maybe once on mount)
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/leads/metadata`, {
+          headers: { 'x-auth-token': localStorage.getItem('token') }
+        });
+        setCourses(res.data.courses);
+        setColleges(res.data.colleges);
+      } catch (err) { console.error("Failed to fetch metadata", err); }
+    };
+    fetchMetadata();
+  }, []);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters or search change
   useEffect(() => { setCurrentPage(1); }, [searchTerm, filters, leadsPerPage]);
 
   return (
@@ -281,7 +314,8 @@ const Leads = ({ user }) => {
           <table className="w-full text-left">
             <thead className="text-xs uppercase text-slate-500 border-b border-slate-800">
               <tr>
-                {isAdmin && <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === filteredLeads.length} onChange={toggleSelectAll} /></th>}
+                {isAdmin && <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} onChange={toggleSelectAll} /></th>}
+                <th className="px-6 py-4 w-12">#</th>
                 <th className="px-6 py-4">Lead Details</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Assigned To</th>
@@ -289,9 +323,10 @@ const Leads = ({ user }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {loading ? (<tr><td colSpan={isAdmin ? "5" : "4"} className="text-center py-12">Loading...</td></tr>) : paginatedLeads.map((lead) => (
+              {loading ? (<tr><td colSpan={isAdmin ? "6" : "5"} className="text-center py-12">Loading...</td></tr>) : paginatedLeads.map((lead, index) => (
                 <tr key={lead._id} className="hover:bg-slate-800/50">
                   {isAdmin && <td className="px-6 py-4"><input type="checkbox" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} /></td>}
+                  <td className="px-6 py-4 text-sm text-slate-500 font-bold">{leadsPerPage === 'All' ? index + 1 : (currentPage - 1) * leadsPerPage + index + 1}</td>
                   <td className="px-6 py-4">
                     <div className="font-bold">{lead.name}</div>
                     <div className="text-xs text-slate-500">{lead.phone} | {lead.course}</div>
@@ -323,7 +358,7 @@ const Leads = ({ user }) => {
         <div className="lg:hidden p-3 space-y-4 w-full max-w-full overflow-x-hidden">
           {isAdmin && paginatedLeads.length > 0 && (
             <div className="flex items-center gap-2 px-1 mb-2">
-              <input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === filteredLeads.length} onChange={toggleSelectAll} className="w-4 h-4" />
+              <input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} onChange={toggleSelectAll} className="w-4 h-4" />
               <span className="text-sm text-slate-300 font-bold">Select All</span>
             </div>
           )}
@@ -333,7 +368,7 @@ const Leads = ({ user }) => {
             <div className="p-8 text-center text-slate-500">No leads found.</div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
-              {paginatedLeads.map((lead) => (
+              {paginatedLeads.map((lead, index) => (
                 <div 
                   key={lead._id} 
                   className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg active:scale-[0.98] transition-all"
@@ -352,7 +387,10 @@ const Leads = ({ user }) => {
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="font-bold text-slate-100 text-sm md:text-base break-words uppercase tracking-tight leading-tight">{lead.name}</div>
+                        <div className="font-bold text-slate-100 text-sm md:text-base break-words uppercase tracking-tight leading-tight">
+                          <span className="text-blue-500 mr-1">#{leadsPerPage === 'All' ? index + 1 : (currentPage - 1) * leadsPerPage + index + 1}</span> 
+                          {lead.name}
+                        </div>
                         <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-0.5">{lead.course}</div>
                       </div>
                     </div>
