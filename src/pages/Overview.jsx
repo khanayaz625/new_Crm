@@ -14,8 +14,8 @@ import {
 } from 'lucide-react';
 import API_BASE from '../config';
 
-const Overview = ({ user }) => {
-  const [stats, setStats] = useState({
+const Overview = ({ user, cache, setCache }) => {
+  const [stats, setStats] = useState(cache || {
     total: 0,
     pending: 0,
     followUp: 0,
@@ -25,7 +25,7 @@ const Overview = ({ user }) => {
     called: 0
   });
   const [productivity, setProductivity] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cache);
   const navigate = useNavigate();
 
   const isAdmin = user?.role === 'admin';
@@ -42,6 +42,7 @@ const Overview = ({ user }) => {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       setStats(res.data);
+      setCache(res.data);
     } catch (err) {
       console.warn("Stats API failed, falling back to client-side calculation", err);
       // Fallback: Fetch all leads and calculate stats manually (old way)

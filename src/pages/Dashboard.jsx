@@ -16,6 +16,12 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  
+  // Cache for performance: avoid re-loading when switching tabs
+  const [leadsCache, setLeadsCache] = useState(null);
+  const [logsCache, setLogsCache] = useState(null);
+  const [statsCache, setStatsCache] = useState(null);
+  const [metadataCache, setMetadataCache] = useState(null);
 
   useEffect(() => {
     fetchNotifications();
@@ -117,10 +123,10 @@ const Dashboard = () => {
         </header>
 
         <Routes>
-          <Route path="/" element={<Overview user={user} />} />
-          <Route path="/leads" element={<Leads user={user} />} />
+          <Route path="/" element={<Overview user={user} cache={statsCache} setCache={setStatsCache} />} />
+          <Route path="/leads" element={<Leads user={user} cache={leadsCache} setCache={setLeadsCache} metadataCache={metadataCache} setMetadataCache={setMetadataCache} />} />
           <Route path="/team" element={<Team />} />
-          <Route path="/calls" element={<Calls />} />
+          <Route path="/calls" element={<Calls user={user} cache={logsCache} setCache={setLogsCache} />} />
           <Route path="/requests" element={<DataRequests user={user} />} />
         </Routes>
       </main>

@@ -4,26 +4,26 @@ import axios from 'axios';
 import { Phone, User, Clock, MessageSquare, Bell } from 'lucide-react';
 import API_BASE from '../config';
 
-const Calls = ({ user }) => {
-  const [logs, setLogs] = useState([]);
+const Calls = ({ user, cache, setCache }) => {
+  const [logs, setLogs] = useState(cache?.logs || []);
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filterDate, setFilterDate] = useState('');
-  const [filterStartDateTime, setFilterStartDateTime] = useState('');
-  const [filterEndDateTime, setFilterEndDateTime] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterEmployeeId, setFilterEmployeeId] = useState('');
+  const [loading, setLoading] = useState(!cache?.logs);
+  const [filterDate, setFilterDate] = useState(cache?.filterDate || '');
+  const [filterStartDateTime, setFilterStartDateTime] = useState(cache?.filterStartDateTime || '');
+  const [filterEndDateTime, setFilterEndDateTime] = useState(cache?.filterEndDateTime || '');
+  const [filterStatus, setFilterStatus] = useState(cache?.filterStatus || '');
+  const [searchTerm, setSearchTerm] = useState(cache?.searchTerm || '');
+  const [filterEmployeeId, setFilterEmployeeId] = useState(cache?.filterEmployeeId || '');
   const [showReminder, setShowReminder] = useState(false);
   const [reminderLog, setReminderLog] = useState(null);
   const [reminderDateTime, setReminderDateTime] = useState('');
 
   const isAdmin = user?.role === 'admin';
 
-  const [totalLogs, setTotalLogs] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [logsPerPage, setLogsPerPage] = useState(50);
+  const [totalLogs, setTotalLogs] = useState(cache?.totalLogs || 0);
+  const [totalPages, setTotalPages] = useState(cache?.totalPages || 0);
+  const [currentPage, setCurrentPage] = useState(cache?.currentPage || 1);
+  const [logsPerPage, setLogsPerPage] = useState(cache?.logsPerPage || 50);
 
   // Fetch logs and employees on mount
   useEffect(() => {
@@ -56,16 +56,27 @@ const Calls = ({ user }) => {
         headers: { 'x-auth-token': localStorage.getItem('token') },
       });
       
-      // Handle both new (paginated) and old (full array) API formats
-      if (res.data.logs) {
-        setLogs(res.data.logs || []);
-        setTotalLogs(res.data.total || 0);
-        setTotalPages(res.data.totalPages || 0);
-      } else if (Array.isArray(res.data)) {
-        setLogs(res.data);
-        setTotalLogs(res.data.length);
-        setTotalPages(1);
-      }
+      const logsData = res.data.logs || (Array.isArray(res.data) ? res.data : []);
+      const total = res.data.total || logsData.length;
+      const pages = res.data.totalPages || 1;
+
+      setLogs(logsData);
+      setTotalLogs(total);
+      setTotalPages(pages);
+
+      setCache({
+        logs: logsData,
+        totalLogs: total,
+        totalPages: pages,
+        currentPage,
+        logsPerPage,
+        searchTerm,
+        filterStatus,
+        filterDate,
+        filterEmployeeId,
+        filterStartDateTime,
+        filterEndDateTime
+      });
     } catch (err) {
       console.error('Failed to fetch call logs', err);
     } finally {

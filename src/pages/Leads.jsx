@@ -21,32 +21,32 @@ import {
   X
 } from 'lucide-react';
 
-const Leads = ({ user }) => {
-  const [leads, setLeads] = useState([]);
+const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
+  const [leads, setLeads] = useState(cache?.leads || []);
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cache?.leads);
   
   // Selection & Bulk Actions
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [bulkEmployeeId, setBulkEmployeeId] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [leadsPerPage, setLeadsPerPage] = useState(user?.role === 'admin' ? 100 : 10);
+  const [currentPage, setCurrentPage] = useState(cache?.currentPage || 1);
+  const [leadsPerPage, setLeadsPerPage] = useState(cache?.leadsPerPage || (user?.role === 'admin' ? 100 : 10));
 
   const location = useLocation();
 
   // Search & Filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
+  const [searchTerm, setSearchTerm] = useState(cache?.searchTerm || '');
+  const [filters, setFilters] = useState(cache?.filters || {
     status: '',
     course: '',
     college: '',
     assigned: 'all',
     employeeId: ''
   });
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(cache?.showFilters || false);
 
-  const [totalLeads, setTotalLeads] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalLeads, setTotalLeads] = useState(cache?.totalLeads || 0);
+  const [totalPages, setTotalPages] = useState(cache?.totalPages || 0);
 
   useEffect(() => {
     if (location.state?.filterType) {
@@ -58,6 +58,11 @@ const Leads = ({ user }) => {
       if (filterType !== 'all') setShowFilters(true);
     }
   }, [location]);
+
+  // Add Lead Modal
+  const [showAddLead, setShowAddLead] = useState(false);
+  const [newLeadData, setNewLeadData] = useState({ name: '', email: '', phone: '', course: '', college: '' });
+  const [addingLead, setAddingLead] = useState(false);
 
   // Modals
   const [showImport, setShowImport] = useState(false);
@@ -109,16 +114,24 @@ const Leads = ({ user }) => {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       
-      // Handle both new (paginated) and old (full array) API formats
-      if (res.data.leads) {
-        setLeads(res.data.leads || []);
-        setTotalLeads(res.data.total || 0);
-        setTotalPages(res.data.totalPages || 0);
-      } else if (Array.isArray(res.data)) {
-        setLeads(res.data);
-        setTotalLeads(res.data.length);
-        setTotalPages(1);
-      }
+      const leadsData = res.data.leads || (Array.isArray(res.data) ? res.data : []);
+      const total = res.data.total || leadsData.length;
+      const pages = res.data.totalPages || 1;
+
+      setLeads(leadsData);
+      setTotalLeads(total);
+      setTotalPages(pages);
+
+      setCache({
+        leads: leadsData,
+        totalLeads: total,
+        totalPages: pages,
+        currentPage,
+        leadsPerPage,
+        searchTerm,
+        filters,
+        showFilters
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -206,6 +219,9 @@ const Leads = ({ user }) => {
     else setSelectedLeads([...selectedLeads, id]);
   };
 
+    finally { setImporting(false); }
+  };
+
   const handleImport = async () => {
     if (!selectedFile) return;
     setImporting(true);
@@ -224,6 +240,26 @@ const Leads = ({ user }) => {
     finally { setImporting(false); }
   };
 
+  const handleAddLead = async (e) => {
+    e.preventDefault();
+    setAddingLead(true);
+    try {
+      await axios.post(`${API_BASE}/leads`, newLeadData, {
+        headers: { 'x-auth-token': localStorage.getItem('token') }
+      });
+      setShowAddLead(false);
+      setNewLeadData({ name: '', email: '', phone: '', course: '', college: '' });
+      fetchLeads();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to add lead');
+    } finally {
+      setAddingLead(false);
+    }
+  };
+
+  const [courses, setCourses] = useState(metadataCache?.courses || []);
+  const [colleges, setColleges] = useState(metadataCache?.colleges || []);
+
   // Fetch unique courses and colleges
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -231,8 +267,11 @@ const Leads = ({ user }) => {
         const res = await axios.get(`${API_BASE}/leads/metadata`, {
           headers: { 'x-auth-token': localStorage.getItem('token') }
         });
-        setCourses(res.data.courses || []);
-        setColleges(res.data.colleges || []);
+        const coursesData = res.data.courses || [];
+        const collegesData = res.data.colleges || [];
+        setCourses(coursesData);
+        setColleges(collegesData);
+        setMetadataCache({ courses: coursesData, colleges: collegesData });
       } catch (err) {
         console.warn("Metadata API not available, deriving from current leads", err);
         // Fallback: derive from leads currently in state
@@ -278,7 +317,8 @@ const Leads = ({ user }) => {
           </button>
         </div>
         <div className="flex gap-3">
-          {isAdmin && <button onClick={() => setShowImport(true)} className="btn-primary h-11"><FileUp size={18} /> Import</button>}
+          <button onClick={() => setShowAddLead(true)} className="btn-primary h-11"><UserPlus size={18} /> Add Lead</button>
+          {isAdmin && <button onClick={() => setShowImport(true)} className="px-4 h-11 bg-slate-800 border border-slate-700 rounded-xl flex items-center gap-2 text-slate-300 hover:bg-slate-700 transition-all"><FileUp size={18} /> Import</button>}
         </div>
       </div>
 
@@ -530,6 +570,74 @@ const Leads = ({ user }) => {
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowImport(false)} className="flex-1 px-4 py-2 border border-slate-800 rounded-lg">Cancel</button>
                 <button type="submit" disabled={importing} className="flex-1 btn-primary">{importing ? 'Importing...' : 'Start'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Add Lead Modal */}
+      {showAddLead && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[70] p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center p-6 border-b border-slate-800">
+              <h3 className="text-xl font-bold">Add New Lead</h3>
+              <button onClick={() => setShowAddLead(false)}><X size={24} className="text-slate-500 hover:text-white" /></button>
+            </div>
+            <form onSubmit={handleAddLead} className="p-6 space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Full Name *</label>
+                <input 
+                  type="text" 
+                  className="w-full" 
+                  value={newLeadData.name} 
+                  onChange={e => setNewLeadData({...newLeadData, name: e.target.value})} 
+                  required 
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Phone Number *</label>
+                  <input 
+                    type="text" 
+                    className="w-full" 
+                    value={newLeadData.phone} 
+                    onChange={e => setNewLeadData({...newLeadData, phone: e.target.value})} 
+                    required 
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Email</label>
+                  <input 
+                    type="email" 
+                    className="w-full" 
+                    value={newLeadData.email} 
+                    onChange={e => setNewLeadData({...newLeadData, email: e.target.value})} 
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Course / Interest</label>
+                <input 
+                  type="text" 
+                  className="w-full" 
+                  value={newLeadData.course} 
+                  onChange={e => setNewLeadData({...newLeadData, course: e.target.value})} 
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">College / University</label>
+                <input 
+                  type="text" 
+                  className="w-full" 
+                  value={newLeadData.college} 
+                  onChange={e => setNewLeadData({...newLeadData, college: e.target.value})} 
+                />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button type="button" onClick={() => setShowAddLead(false)} className="flex-1 px-4 py-2 border border-slate-800 rounded-xl">Cancel</button>
+                <button type="submit" disabled={addingLead} className="flex-1 btn-primary">
+                  {addingLead ? 'Adding...' : 'Save Lead'}
+                </button>
               </div>
             </form>
           </div>
