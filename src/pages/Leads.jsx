@@ -362,7 +362,7 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
         </div>
 
         {/* Mobile Modern Cards View */}
-        <div className="lg:hidden p-4 space-y-8">
+        <div className="lg:hidden p-4 grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
               <Loader2 className="animate-spin text-green-600" size={32} />

@@ -170,6 +170,18 @@ const Calls = ({ user, cache, setCache }) => {
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
+            {isAdmin && (
+              <select
+                className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
+                value={filterEmployeeId}
+                onChange={(e) => setFilterEmployeeId(e.target.value)}
+              >
+                <option value="">All Agents</option>
+                {employees.map(emp => (
+                  <option key={emp._id} value={emp._id}>{emp.name}</option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
         {/* Desktop Table View */}
