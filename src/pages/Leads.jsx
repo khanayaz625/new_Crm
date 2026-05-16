@@ -171,7 +171,6 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
     }
   };
 
-  // ... other handlers (Bulk, Delete, etc.)
   const handleBulkAssign = async () => {
     if (!bulkEmployeeId || selectedLeads.length === 0) return;
     try {
@@ -219,9 +218,6 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
     else setSelectedLeads([...selectedLeads, id]);
   };
 
-    finally { setImporting(false); }
-  };
-
   const handleImport = async () => {
     if (!selectedFile) return;
     setImporting(true);
@@ -260,7 +256,6 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
   const [courses, setCourses] = useState(metadataCache?.courses || []);
   const [colleges, setColleges] = useState(metadataCache?.colleges || []);
 
-  // Fetch unique courses and colleges
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
@@ -274,7 +269,6 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
         setMetadataCache({ courses: coursesData, colleges: collegesData });
       } catch (err) {
         console.warn("Metadata API not available, deriving from current leads", err);
-        // Fallback: derive from leads currently in state
         if (leads.length > 0) {
           setCourses([...new Set(leads.map(l => l.course).filter(Boolean))].sort());
           setColleges([...new Set(leads.map(l => l.college).filter(Boolean))].sort());
@@ -282,14 +276,11 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
       }
     };
     fetchMetadata();
-  }, [leads.length === 0]); // Re-run if we have no leads (initial load)
+  }, [leads.length === 0]); 
 
-  // Reset to page 1 when filters or search change
   useEffect(() => { setCurrentPage(1); }, [searchTerm, filters, leadsPerPage]);
 
-  // Hybrid Filtering: If the backend is old (returns all leads in an array), 
-  // we must filter on the client. If it's the new backend, we use the data as-is.
-  const isOldBackend = !totalPages || totalPages <= 1; // Simplistic check
+  const isOldBackend = !totalPages || totalPages <= 1;
   const displayLeads = (isOldBackend && leads.length > 0) ? leads.filter(l => {
     const matchesSearch = !searchTerm || l.name?.toLowerCase().includes(searchTerm.toLowerCase()) || l.phone?.includes(searchTerm);
     const matchesStatus = !filters.status || l.status === filters.status;
@@ -337,45 +328,14 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
         </div>
       )}
 
-      <div className="flex justify-end text-sm text-slate-400 items-center gap-2 mt-4">
-        <span>Show:</span>
-        <select 
-          className="bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none text-slate-600 font-medium"
-          value={leadsPerPage} 
-          onChange={(e) => setLeadsPerPage(e.target.value === 'All' ? 'All' : Number(e.target.value))}
-        >
-          <option value={10}>10 per page</option>
-          <option value={50}>50 per page</option>
-          <option value={100}>100 per page</option>
-          {isAdmin && <option value={500}>500 per page</option>}
-          {isAdmin && <option value="All">All Leads</option>}
-        </select>
-      </div>
-
-      {showFilters && (
-        <div className="card grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 animate-in slide-in-from-top-2">
-          <select value={filters.status} onChange={e => setFilters({...filters, status: e.target.value})}><option value="">All Statuses</option>{statuses.map(s => <option key={s} value={s}>{s}</option>)}</select>
-          <select value={filters.course} onChange={e => setFilters({...filters, course: e.target.value})}><option value="">All Courses</option>{courses.map(c => <option key={c} value={c}>{c}</option>)}</select>
-          <select value={filters.college} onChange={e => setFilters({...filters, college: e.target.value})}><option value="">All Colleges</option>{colleges.map(c => <option key={c} value={c}>{c}</option>)}</select>
-          <select value={filters.assigned} onChange={e => setFilters({...filters, assigned: e.target.value})}><option value="all">All Assignment</option><option value="assigned">Assigned</option><option value="unassigned">Unassigned</option></select>
-          {isAdmin && (
-            <select value={filters.employeeId} onChange={e => setFilters({...filters, employeeId: e.target.value})}>
-              <option value="">All Employees</option>
-              {employees.map(emp => <option key={emp._id} value={emp._id}>{emp.name}</option>)}
-            </select>
-          )}
-        </div>
-      )}
-
-      {/* Leads List: Table for Desktop, Cards for Mobile */}
+      {/* Leads List */}
       <div className="card overflow-hidden">
-        {/* Desktop Table View */}
+        {/* Desktop Table */}
         <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left">
             <thead className="text-[10px] uppercase text-slate-400 font-black tracking-widest border-b border-slate-100 bg-slate-50/50">
               <tr>
-                {isAdmin && <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} onChange={toggleSelectAll} className="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500" /></th>}
-                <th className="px-6 py-4 w-12">#</th>
+                {isAdmin && <th className="px-6 py-4 w-10"><input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} onChange={toggleSelectAll} /></th>}
                 <th className="px-6 py-4">Lead Details</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Assigned To</th>
@@ -383,30 +343,17 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {loading ? (<tr><td colSpan={isAdmin ? "6" : "5"} className="text-center py-12 text-slate-400 font-medium">Loading data...</td></tr>) : paginatedLeads.map((lead, index) => (
-                <tr key={lead._id} className="hover:bg-slate-50/50 transition-colors group">
-                  {isAdmin && <td className="px-6 py-4"><input type="checkbox" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} className="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500" /></td>}
-                  <td className="px-6 py-4 text-sm text-slate-400 font-bold">{leadsPerPage === 'All' ? index + 1 : (currentPage - 1) * leadsPerPage + index + 1}</td>
+              {loading ? (<tr><td colSpan="5" className="text-center py-12">Loading...</td></tr>) : paginatedLeads.map(lead => (
+                <tr key={lead._id}>
+                  {isAdmin && <td className="px-6 py-4"><input type="checkbox" checked={selectedLeads.includes(lead._id)} onChange={() => toggleSelectOne(lead._id)} /></td>}
                   <td className="px-6 py-4">
                     <div className="font-bold text-slate-900">{lead.name}</div>
-                    <div className="text-xs text-slate-500">{lead.phone} <span className="mx-1 opacity-30">|</span> {lead.course}</div>
+                    <div className="text-xs text-slate-500">{lead.phone}</div>
                   </td>
-                  <td className="px-6 py-4">
-                    <button 
-                      onClick={() => { setCurrentLead(lead); setNewStatus(lead.status); setShowStatusModal(true); }}
-                      className="flex items-center gap-2 hover:bg-blue-50 px-3 py-1.5 rounded-full transition-all border border-transparent hover:border-blue-100"
-                    >
-                      <span className="text-xs font-black text-blue-600 uppercase tracking-tighter">{lead.status}</span>
-                      <ChevronDown size={14} className="text-blue-300" />
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 font-medium">{lead.assignedTo ? lead.assignedTo.name : <span className="text-slate-300 italic">Unassigned</span>}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="p-2 text-green-600 hover:bg-green-50 rounded-xl transition-colors"><MessageCircle size={18} /></a>
-                      <a href={`tel:${lead.phone}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"><Phone size={18} /></a>
-                      {isAdmin && <button onClick={() => handleDelete(lead._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors"><Trash2 size={18} /></button>}
-                    </div>
+                  <td className="px-6 py-4"><span className="text-xs font-black uppercase text-blue-600 bg-blue-50 px-2 py-1 rounded-full">{lead.status}</span></td>
+                  <td className="px-6 py-4">{lead.assignedTo?.name || 'Unassigned'}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => { setCurrentLead(lead); setShowStatusModal(true); }} className="text-blue-600 font-bold text-sm">Update</button>
                   </td>
                 </tr>
               ))}
@@ -414,123 +361,75 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
           </table>
         </div>
 
-        {/* Mobile Modern Card View */}
-        <div className="lg:hidden p-4 space-y-4">
-          {isAdmin && paginatedLeads.length > 0 && (
-            <div className="flex items-center justify-between px-4 py-4 bg-white rounded-2xl border border-slate-100 mb-6 shadow-sm">
-              <div className="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} 
-                  onChange={toggleSelectAll} 
-                  className="w-5 h-5 rounded-lg border-slate-300 text-green-600 focus:ring-green-500" 
-                />
-                <span className="text-sm font-black text-slate-900">Select All Page Leads</span>
-              </div>
-              <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">{selectedLeads.length} selected</span>
-            </div>
-          )}
-          
+        {/* Mobile Modern Cards View */}
+        <div className="lg:hidden p-4 space-y-8">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
               <Loader2 className="animate-spin text-green-600" size={32} />
-              <p className="font-medium">Loading your leads...</p>
+              <p className="font-medium">Curating your leads...</p>
             </div>
           ) : paginatedLeads.length === 0 ? (
-            <div className="text-center py-20 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
-              <p className="text-slate-500 font-medium">No leads found matching your criteria.</p>
+            <div className="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+              <p className="text-slate-500 font-medium italic">No leads found in your queue.</p>
             </div>
           ) : (
-            <div className="space-y-6">
-              {paginatedLeads.map((lead, index) => (
-                <div 
-                  key={lead._id} 
-                  className="bg-white border border-slate-100 rounded-[2.5rem] p-7 shadow-xl shadow-slate-200/50 relative overflow-hidden group active:scale-[0.98] transition-all"
-                >
-                  {/* Subtle Gradient Accent */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
-                  
-                  <div className="relative z-10">
-                    <div className="flex justify-between items-start mb-5">
-                      <div className="flex gap-4 min-w-0">
-                        {isAdmin && (
-                          <input 
-                            type="checkbox" 
-                            className="w-6 h-6 rounded-xl border-slate-200 text-green-600 mt-1 shadow-sm" 
-                            checked={selectedLeads.includes(lead._id)} 
-                            onChange={() => toggleSelectOne(lead._id)} 
-                          />
-                        )}
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <span className="bg-slate-900 text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter shadow-lg shadow-slate-900/10">
-                              #{leadsPerPage === 'All' ? index + 1 : (currentPage - 1) * leadsPerPage + index + 1}
-                            </span>
-                            <span className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] truncate">{lead.course || 'General'}</span>
-                          </div>
-                          <h3 className="text-xl font-black text-slate-900 leading-tight uppercase truncate">{lead.name}</h3>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => { setCurrentLead(lead); setNewStatus(lead.status); setShowStatusModal(true); }}
-                        className="px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-2xl text-[10px] font-black text-blue-600 uppercase tracking-widest shadow-sm hover:bg-blue-100 transition-colors"
-                      >
-                        {lead.status}
-                      </button>
+            paginatedLeads.map((lead) => (
+              <div 
+                key={lead._id} 
+                className="bg-white border border-slate-100 rounded-[3rem] p-8 shadow-2xl shadow-slate-200/50 relative overflow-hidden group transition-all"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex flex-col items-center text-center mb-8">
+                    <div className="w-24 h-24 rounded-[2rem] bg-slate-100 flex items-center justify-center text-3xl font-black text-slate-400 mb-6 border-4 border-white shadow-xl">
+                      {lead.name.charAt(0)}
                     </div>
- 
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                      <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100/50">
-                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1.5">Institution</p>
-                        <p className="text-xs text-slate-700 font-bold truncate">{lead.college || 'Not Specified'}</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100/50">
-                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1.5">Agent</p>
-                        <p className="text-xs text-slate-700 font-bold truncate">{lead.assignedTo?.name || 'Unassigned'}</p>
-                      </div>
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-tight uppercase">{lead.name}</h3>
+                    <p className="text-sm font-bold text-green-600 mt-1 uppercase tracking-widest">{lead.college || 'Gizmo Experts'}</p>
+                  </div>
+
+                  <div className="flex justify-center gap-5 mb-10">
+                    <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="w-14 h-14 bg-white border-2 border-green-600/20 text-green-600 rounded-full flex items-center justify-center hover:bg-green-600 hover:text-white transition-all active:scale-90"><MessageSquare size={24} strokeWidth={2.5} /></a>
+                    <button className="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-600/30 hover:bg-green-700 transition-all active:scale-90 border border-green-600/20"><div className="w-4 h-4 bg-white rounded-full"></div></button>
+                    <a href={`tel:${lead.phone}`} className="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-600/30 hover:bg-green-700 transition-all active:scale-90"><Phone size={24} fill="currentColor" /></a>
+                    <button className="w-14 h-14 bg-white border-2 border-slate-200 text-slate-400 rounded-full flex items-center justify-center hover:bg-slate-50 transition-all active:scale-90 shadow-md"><Mail size={24} /></button>
+                  </div>
+
+                  <div className="flex flex-wrap justify-center gap-2.5 mb-10">
+                    <span className="px-5 py-2.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest border border-blue-100 shadow-sm">Retail</span>
+                    <span className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${lead.status === 'Follow Up' ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>{lead.status === 'Follow Up' ? 'To Follow-up' : lead.status}</span>
+                    <span className="px-5 py-2.5 rounded-full bg-purple-50 text-purple-600 text-[10px] font-black uppercase tracking-widest border border-purple-100 shadow-sm">VIP</span>
+                  </div>
+
+                  <div className="bg-slate-50/50 rounded-[2.5rem] p-7 border border-slate-100">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Interaction Snippet</span>
+                      <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500">{lead.assignedTo?.name?.charAt(0) || 'A'}</div>
                     </div>
- 
-                    <div className="flex items-center gap-3">
-                      <a href={`tel:${lead.phone}`} className="flex-[2] h-16 bg-green-600 hover:bg-green-500 flex items-center justify-center gap-3 rounded-2xl text-white font-black uppercase tracking-widest transition-all shadow-xl shadow-green-600/20 active:shadow-none translate-y-0 active:translate-y-1">
-                        <Phone size={20} fill="currentColor" />
-                        <span>Call Now</span>
-                      </a>
-                      <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="flex-1 h-16 bg-green-50 hover:bg-green-100 flex items-center justify-center rounded-2xl text-green-600 border border-green-100 transition-all">
-                        <MessageCircle size={28} />
-                      </a>
-                      {isAdmin && (
-                        <button onClick={() => handleDelete(lead._id)} className="flex-1 h-16 bg-red-50 hover:bg-red-100 flex items-center justify-center rounded-2xl text-red-500 border border-red-100 transition-all">
-                          <Trash2 size={28} />
-                        </button>
-                      )}
+                    <p className="text-sm text-slate-600 font-medium italic">"Call scheduled with {lead.name} today at 16:00"</p>
+                    <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest"><Clock size={12} className="text-slate-300" />Today at 16:00 • Gizmo Experts</div>
+                  </div>
+
+                  <div className="mt-8 pt-8 border-t border-slate-50 flex justify-between items-center px-2">
+                    <div className="flex -space-x-3">
+                      {[1, 2, 3].map(i => (<div key={i} className="w-10 h-10 rounded-full bg-white border-2 border-white shadow-sm overflow-hidden"><div className="w-full h-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">P</div></div>))}
                     </div>
+                    {/* Use Plus icon here */}
+                    <div className="w-14 h-14 bg-green-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-green-600/20 active:scale-95 transition-all"><span className="text-2xl font-bold">+</span></div>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))
           )}
         </div>
 
         {/* Pagination Controls */}
         {finalTotalPages > 1 && (
           <div className="flex items-center justify-between p-6 border-t border-slate-50 bg-slate-50/30">
-            <button 
-              disabled={currentPage === 1} 
-              onClick={() => setCurrentPage(p => p - 1)}
-              className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm"
-            >
-              Previous
-            </button>
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
-              Page <span className="text-slate-900">{currentPage}</span> of {finalTotalPages}
-            </span>
-            <button 
-              disabled={currentPage === finalTotalPages} 
-              onClick={() => setCurrentPage(p => p + 1)}
-              className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm"
-            >
-              Next
-            </button>
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm">Previous</button>
+            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Page <span className="text-slate-900">{currentPage}</span> of {finalTotalPages}</span>
+            <button disabled={currentPage === finalTotalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm">Next</button>
           </div>
         )}
       </div>
