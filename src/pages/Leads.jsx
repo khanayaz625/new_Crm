@@ -298,15 +298,15 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row justify-between gap-4 items-center">
         <div className="flex gap-3 w-full lg:flex-1">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors" size={18} />
+          <div className="relative flex-1">
             <input 
               type="text" 
-              placeholder="Search leads..." 
-              className="w-full pl-14 pr-4 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-sm font-medium placeholder:text-slate-400" 
+              placeholder="Search Lead..." 
+              className="peer w-full pl-14 pr-4 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-sm font-medium placeholder:text-slate-400 outline-none" 
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
             />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 peer-focus:text-green-600 transition-colors pointer-events-none" size={18} />
           </div>
           <button 
             onClick={() => setShowFilters(!showFilters)} 

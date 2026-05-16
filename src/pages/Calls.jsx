@@ -140,15 +140,15 @@ const Calls = ({ user, cache, setCache }) => {
             </h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-full lg:flex-1 lg:max-w-4xl">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors" size={18} />
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search Lead..."
-                className="w-full bg-white border border-slate-100 rounded-xl pl-12 pr-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
+                className="peer w-full bg-white border border-slate-100 rounded-xl pl-12 pr-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 peer-focus:text-green-600 transition-colors pointer-events-none" size={18} />
             </div>
             <input
               type="date"

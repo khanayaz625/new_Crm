@@ -47,31 +47,31 @@ const Login = () => {
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Email Address</label>
-            <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-green-500 transition-colors" size={18} />
+            <div className="relative">
               <input 
                 type="email" 
                 placeholder="email@example.com"
-                className="w-full pl-12 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-white placeholder:text-slate-600 outline-none"
+                className="peer w-full pl-12 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-white placeholder:text-slate-600 outline-none"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 peer-focus:text-green-500 transition-colors pointer-events-none" size={18} />
             </div>
           </div>
 
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Password</label>
-            <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-green-500 transition-colors" size={18} />
+            <div className="relative">
               <input 
                 type="password" 
                 placeholder="••••••••"
-                className="w-full pl-12 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-white placeholder:text-slate-600 outline-none"
+                className="peer w-full pl-12 h-14 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-white placeholder:text-slate-600 outline-none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 peer-focus:text-green-500 transition-colors pointer-events-none" size={18} />
             </div>
           </div>
 
