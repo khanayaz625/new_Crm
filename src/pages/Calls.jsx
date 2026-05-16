@@ -108,9 +108,18 @@ const Calls = ({ user, cache, setCache }) => {
     // Date filter
     const logDate = new Date(log.createdAt).toISOString().split('T')[0];
     const matchesDate = !filterDate || logDate === filterDate;
+
+    // 1-week auto-cleanup: hide logs older than 7 days
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const isRecent = new Date(log.createdAt) > oneWeekAgo;
     
-    return matchesSearch && matchesStatus && matchesEmployee && matchesDate;
-  }) : logs;
+    return matchesSearch && matchesStatus && matchesEmployee && matchesDate && isRecent;
+  }) : logs.filter(log => {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    return new Date(log.createdAt) > oneWeekAgo;
+  });
 
   const displayLogs = isOldBackend ? filteredLogs.slice((currentPage - 1) * logsPerPage, currentPage * logsPerPage) : logs;
   const finalTotalPages = isOldBackend ? Math.ceil(filteredLogs.length / logsPerPage) : totalPages;
@@ -284,36 +293,36 @@ const Calls = ({ user, cache, setCache }) => {
               {displayLogs.map((log) => (
                 <div 
                   key={log._id} 
-                  className="bg-white border border-slate-100 rounded-2xl p-3 shadow-premium relative overflow-hidden"
+                  className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-premium relative overflow-hidden"
                 >
-                  <div className="flex justify-between items-start gap-2 mb-2">
+                  <div className="flex justify-between items-start gap-3 mb-4">
                     <div className="min-w-0">
-                      <h3 className="text-sm font-black text-slate-900 truncate uppercase leading-tight">{log.leadId?.name || 'Deleted'}</h3>
-                      <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{log.leadId?.phone}</p>
+                      <h3 className="text-lg font-black text-slate-900 truncate uppercase leading-tight">{log.leadId?.name || 'Deleted'}</h3>
+                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">{log.leadId?.phone}</p>
                     </div>
-                    <span className="px-2 py-0.5 rounded-lg bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest border border-green-100 shrink-0">
+                    <span className="px-3 py-1 rounded-xl bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest border border-green-100 shrink-0">
                       {log.status}
                     </span>
                   </div>
  
-                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100/50 mb-3">
-                    <p className="text-[11px] text-slate-600 font-medium italic line-clamp-2 leading-tight">"{log.remark || 'No remark'}"</p>
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50 mb-5">
+                    <p className="text-sm text-slate-600 font-medium italic line-clamp-2 leading-relaxed">"{log.remark || 'No remark'}"</p>
                   </div>
  
-                  <div className="flex items-center gap-2 pt-2 border-t border-slate-50">
+                  <div className="flex items-center gap-3 pt-4 border-t border-slate-50">
                     <a 
                       href={`tel:${log.leadId?.phone}`} 
-                      className="flex-1 h-9 flex items-center justify-center bg-green-600 text-white rounded-xl shadow-sm active:scale-90 transition-all"
+                      className="flex-1 h-12 flex items-center justify-center bg-green-600 text-white rounded-2xl shadow-sm active:scale-90 transition-all"
                     >
-                      <Phone size={14} fill="currentColor" />
+                      <Phone size={18} fill="currentColor" />
                     </a>
                     <a 
                       href={`https://wa.me/${log.leadId?.phone?.replace(/[^0-9]/g, '')}`} 
                       target="_blank" 
                       rel="noreferrer"
-                      className="flex-1 h-9 flex items-center justify-center bg-white border border-slate-200 text-green-600 rounded-xl active:scale-90 transition-all"
+                      className="flex-1 h-12 flex items-center justify-center bg-white border border-slate-200 text-green-600 rounded-2xl active:scale-90 transition-all"
                     >
-                      <MessageSquare size={14} strokeWidth={2.5} />
+                      <MessageSquare size={18} strokeWidth={2.5} />
                     </a>
                     <button
                       onClick={() => {
@@ -321,9 +330,9 @@ const Calls = ({ user, cache, setCache }) => {
                         setReminderDateTime('');
                         setShowReminder(true);
                       }}
-                      className="flex-1 h-9 bg-white border border-slate-200 text-slate-400 flex items-center justify-center rounded-xl hover:text-green-600 transition-all active:scale-90 shadow-sm"
+                      className="flex-1 h-12 bg-white border border-slate-200 text-slate-400 flex items-center justify-center rounded-2xl hover:text-green-600 transition-all active:scale-90 shadow-sm"
                     >
-                      <Bell size={14} />
+                      <Bell size={18} />
                     </button>
                   </div>
                 </div>

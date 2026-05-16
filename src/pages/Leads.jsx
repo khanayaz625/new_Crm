@@ -53,11 +53,16 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
       const { filterType, value } = location.state;
       setFilters(prev => ({
         ...prev,
-        [filterType]: value
+        [filterType === 'all' ? 'status' : filterType]: value
       }));
       if (filterType !== 'all') setShowFilters(true);
+      else {
+        // Reset all filters if 'all' is clicked
+        setFilters({ status: '', course: '', college: '', assigned: 'all', employeeId: '' });
+        setSearchTerm('');
+      }
     }
-  }, [location]);
+  }, [location.state]);
 
   // Add Lead Modal
   const [showAddLead, setShowAddLead] = useState(false);
@@ -209,8 +214,12 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
   };
 
   const toggleSelectAll = () => {
-    if (selectedLeads.length === leads.length) setSelectedLeads([]);
-    else setSelectedLeads(leads.map(l => l._id));
+    const targetLeads = isOldBackend ? displayLeads : leads;
+    if (selectedLeads.length === targetLeads.length && targetLeads.length > 0) {
+      setSelectedLeads([]);
+    } else {
+      setSelectedLeads(targetLeads.map(l => l._id));
+    }
   };
 
   const toggleSelectOne = (id) => {
@@ -453,6 +462,12 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                     <div className="flex justify-end items-center gap-2">
                       <a 
                         href={`tel:${lead.phone}`} 
+                        onClick={() => {
+                          // Optional: Local state update if desired
+                          if (lead.status === 'New') {
+                            // Automatically update to contacted or check for follow-up logic
+                          }
+                        }}
                         className="w-8 h-8 flex items-center justify-center bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all shadow-sm"
                         title="Call"
                       >
@@ -490,7 +505,7 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
         </div>
 
         {/* Mobile Modern Cards View */}
-        <div className="lg:hidden p-4 grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+        <div className="lg:hidden p-4 space-y-4">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
               <Loader2 className="animate-spin text-green-600" size={32} />
@@ -504,18 +519,18 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
             paginatedLeads.map((lead, index) => (
               <div 
                 key={lead._id} 
-                className="bg-white border border-slate-100 rounded-3xl p-3 shadow-premium relative group transition-all"
+                className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-premium relative group transition-all"
               >
                 {/* Header Row: Info */}
-                <div className="flex justify-between items-start gap-2 mb-2">
-                  <div className="flex gap-3 min-w-0">
-                    <div className="w-10 h-10 shrink-0 rounded-xl bg-slate-50 flex items-center justify-center text-lg font-black text-slate-400 border border-white shadow-inner">
+                <div className="flex justify-between items-start gap-3 mb-4">
+                  <div className="flex gap-4 min-w-0">
+                    <div className="w-14 h-14 shrink-0 rounded-2xl bg-slate-50 flex items-center justify-center text-xl font-black text-slate-400 border border-white shadow-inner">
                       {(lead.name || 'L').charAt(0)}
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-black text-slate-900 truncate uppercase leading-tight">{lead.name}</h3>
-                      <p className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                        <Phone size={8} />
+                    <div className="min-w-0 pt-1">
+                      <h3 className="text-lg font-black text-slate-900 truncate uppercase leading-tight">{lead.name}</h3>
+                      <p className="text-xs font-bold text-slate-400 flex items-center gap-1.5 mt-1">
+                        <Phone size={10} />
                         {lead.phone}
                       </p>
                     </div>
@@ -523,8 +538,8 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                 </div>
 
                 {/* Info Row: Badges */}
-                <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                  <div className={`px-2 py-0.5 rounded-lg border text-[8px] font-black uppercase tracking-widest ${
+                <div className="flex flex-wrap items-center gap-2 mb-5">
+                  <div className={`px-3 py-1 rounded-xl border text-[10px] font-black uppercase tracking-widest ${
                     lead.status === 'Won' ? 'bg-green-50 border-green-100 text-green-600' :
                     lead.status === 'Lost' ? 'bg-red-50 border-red-100 text-red-600' :
                     'bg-blue-50 border-blue-100 text-blue-600'
@@ -532,48 +547,48 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                     {lead.status}
                   </div>
                   {lead.course && (
-                    <div className="px-2 py-0.5 bg-slate-50 rounded-lg border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                    <div className="px-3 py-1 bg-slate-50 rounded-xl border border-slate-100 text-[10px] font-black text-slate-500 uppercase tracking-widest">
                       {lead.course}
                     </div>
                   )}
                   {lead.college && (
-                    <div className="px-2 py-0.5 bg-green-50 rounded-lg border border-green-100/50 text-[8px] font-black text-green-600 uppercase tracking-widest">
+                    <div className="px-3 py-1 bg-green-50 rounded-xl border border-green-100/50 text-[10px] font-black text-green-600 uppercase tracking-widest">
                       {lead.college}
                     </div>
                   )}
                 </div>
 
                 {/* Unified Action Bar: 4 Icons */}
-                <div className="flex items-center gap-2 pt-2 border-t border-slate-50">
+                <div className="flex items-center gap-3 pt-5 border-t border-slate-50">
                   <a 
                     href={`tel:${lead.phone}`} 
-                    className="flex-1 h-10 flex items-center justify-center bg-green-600 text-white rounded-xl shadow-lg shadow-green-600/20 active:scale-90 transition-all"
+                    className="flex-1 h-12 flex items-center justify-center bg-green-600 text-white rounded-2xl shadow-lg shadow-green-600/20 active:scale-90 transition-all"
                     title="Call"
                   >
-                    <Phone size={16} fill="currentColor" />
+                    <Phone size={20} fill="currentColor" />
                   </a>
                   <a 
                     href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="flex-1 h-10 flex items-center justify-center bg-white border border-slate-200 text-green-600 rounded-xl hover:bg-green-50 active:scale-90 transition-all"
+                    className="flex-1 h-12 flex items-center justify-center bg-white border border-slate-200 text-green-600 rounded-2xl hover:bg-green-50 active:scale-90 transition-all"
                     title="WhatsApp"
                   >
-                    <MessageSquare size={16} strokeWidth={2.5} />
+                    <MessageSquare size={20} strokeWidth={2.5} />
                   </a>
                   <button 
                     onClick={() => { setCurrentLead(lead); setShowStatusModal(true); }}
-                    className="flex-1 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 active:scale-90 transition-all"
+                    className="flex-1 h-12 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-2xl hover:bg-slate-50 active:scale-90 transition-all"
                     title="Update Status"
                   >
-                    <Clock size={16} strokeWidth={2.5} />
+                    <Clock size={20} strokeWidth={2.5} />
                   </button>
                   <button 
                     onClick={() => handleDelete(lead._id)}
-                    className="flex-1 h-10 flex items-center justify-center bg-white border border-slate-200 text-red-500 rounded-xl hover:bg-red-50 active:scale-90 transition-all"
+                    className="flex-1 h-12 flex items-center justify-center bg-white border border-slate-200 text-red-500 rounded-2xl hover:bg-red-50 active:scale-90 transition-all"
                     title="Delete Lead"
                   >
-                    <Trash2 size={16} strokeWidth={2.5} />
+                    <Trash2 size={20} strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
