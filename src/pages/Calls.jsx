@@ -95,11 +95,28 @@ const Calls = ({ user, cache, setCache }) => {
     }
   };
 
-  // No more client-side filtering
-  const filteredLogs = logs;
+  // Hybrid Filtering: If the backend is old (returns all logs in an array), 
+  // we must filter on the client. If it's the new backend, we use the data as-is.
+  const isOldBackend = !totalPages || totalPages <= 1;
+  const filteredLogs = (isOldBackend && logs.length > 0) ? logs.filter(log => {
+    const matchesSearch = !searchTerm || 
+      log.leadId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      log.leadId?.phone?.includes(searchTerm);
+    const matchesStatus = !filterStatus || log.status === filterStatus;
+    const matchesEmployee = !filterEmployeeId || (log.employeeId?._id === filterEmployeeId || log.employeeId === filterEmployeeId);
+    
+    // Date filter
+    const logDate = new Date(log.createdAt).toISOString().split('T')[0];
+    const matchesDate = !filterDate || logDate === filterDate;
+    
+    return matchesSearch && matchesStatus && matchesEmployee && matchesDate;
+  }) : logs;
+
+  const displayLogs = isOldBackend ? filteredLogs.slice((currentPage - 1) * logsPerPage, currentPage * logsPerPage) : logs;
+  const finalTotalPages = isOldBackend ? Math.ceil(filteredLogs.length / logsPerPage) : totalPages;
 
   // Reset to page 1 when filters or search change
-  useEffect(() => { setCurrentPage(1); }, [searchTerm, filterStatus, filterDate, filterEmployeeId, filterStartDateTime, filterEndDateTime, logsPerPage]);
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, filterStatus, filterDate, filterEmployeeId, logsPerPage]);
 
   const handleSetReminder = () => {
     if (reminderLog && reminderDateTime) {
@@ -205,7 +222,7 @@ const Calls = ({ user, cache, setCache }) => {
                   </td>
                 </tr>
               ) : (
-                filteredLogs.map((log) => (
+                displayLogs.map((log) => (
                   <tr key={log._id} className="hover:bg-slate-800/50 transition-all">
                     <td className="px-6 py-4">
                       <div className="font-semibold text-slate-100">
@@ -269,10 +286,10 @@ const Calls = ({ user, cache, setCache }) => {
               Previous
             </button>
             <span className="text-sm text-slate-400">
-              Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}
+              Page <span className="font-bold text-white">{currentPage}</span> of {finalTotalPages}
             </span>
             <button 
-              disabled={currentPage === totalPages} 
+              disabled={currentPage === finalTotalPages} 
               onClick={() => setCurrentPage(p => p + 1)}
               className="px-4 py-2 border border-slate-700 rounded-lg text-sm disabled:opacity-50"
             >
