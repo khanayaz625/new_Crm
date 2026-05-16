@@ -56,9 +56,16 @@ const Calls = ({ user }) => {
         headers: { 'x-auth-token': localStorage.getItem('token') },
       });
       
-      setLogs(res.data.logs);
-      setTotalLogs(res.data.total);
-      setTotalPages(res.data.totalPages);
+      // Handle both new (paginated) and old (full array) API formats
+      if (res.data.logs) {
+        setLogs(res.data.logs || []);
+        setTotalLogs(res.data.total || 0);
+        setTotalPages(res.data.totalPages || 0);
+      } else if (Array.isArray(res.data)) {
+        setLogs(res.data);
+        setTotalLogs(res.data.length);
+        setTotalPages(1);
+      }
     } catch (err) {
       console.error('Failed to fetch call logs', err);
     } finally {

@@ -109,9 +109,16 @@ const Leads = ({ user }) => {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       
-      setLeads(res.data.leads);
-      setTotalLeads(res.data.total);
-      setTotalPages(res.data.totalPages);
+      // Handle both new (paginated) and old (full array) API formats
+      if (res.data.leads) {
+        setLeads(res.data.leads || []);
+        setTotalLeads(res.data.total || 0);
+        setTotalPages(res.data.totalPages || 0);
+      } else if (Array.isArray(res.data)) {
+        setLeads(res.data);
+        setTotalLeads(res.data.length);
+        setTotalPages(1);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -234,8 +241,8 @@ const Leads = ({ user }) => {
         const res = await axios.get(`${API_BASE}/leads/metadata`, {
           headers: { 'x-auth-token': localStorage.getItem('token') }
         });
-        setCourses(res.data.courses);
-        setColleges(res.data.colleges);
+        setCourses(res.data.courses || []);
+        setColleges(res.data.colleges || []);
       } catch (err) { console.error("Failed to fetch metadata", err); }
     };
     fetchMetadata();
