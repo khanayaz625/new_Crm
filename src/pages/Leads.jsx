@@ -414,78 +414,93 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
           </table>
         </div>
 
-        {/* Mobile Boxy Grid View (No X-Scroll) */}
-        <div className="lg:hidden p-3 space-y-4 w-full max-w-full overflow-x-hidden">
+        {/* Mobile Modern Card View */}
+        <div className="lg:hidden p-4 space-y-4">
           {isAdmin && paginatedLeads.length > 0 && (
-            <div className="flex items-center gap-2 px-1 mb-2">
-              <input type="checkbox" checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} onChange={toggleSelectAll} className="w-4 h-4" />
-              <span className="text-sm text-slate-300 font-bold">Select All</span>
+            <div className="flex items-center justify-between px-2 py-3 bg-slate-900/50 rounded-xl border border-slate-800 mb-4">
+              <div className="flex items-center gap-3">
+                <input 
+                  type="checkbox" 
+                  checked={selectedLeads.length > 0 && selectedLeads.length === leads.length} 
+                  onChange={toggleSelectAll} 
+                  className="w-5 h-5 rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500" 
+                />
+                <span className="text-sm font-bold text-slate-300">Select All Page Leads</span>
+              </div>
+              <span className="text-xs text-slate-500">{selectedLeads.length} selected</span>
             </div>
           )}
+          
           {loading ? (
-            <div className="p-8 text-center text-slate-500">Loading leads...</div>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500 gap-3">
+              <Loader2 className="animate-spin text-blue-500" size={32} />
+              <p>Loading your leads...</p>
+            </div>
           ) : paginatedLeads.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">No leads found.</div>
+            <div className="text-center py-20 bg-slate-900/30 rounded-3xl border border-dashed border-slate-800">
+              <p className="text-slate-500">No leads found matching your criteria.</p>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-4">
               {paginatedLeads.map((lead, index) => (
                 <div 
                   key={lead._id} 
-                  className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg active:scale-[0.98] transition-all"
+                  className="bg-slate-900 border border-slate-800 rounded-[2rem] p-6 shadow-xl relative overflow-hidden group active:scale-[0.99] transition-all"
                 >
-                  {/* Top Header: Name and Status */}
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-start gap-3 flex-1 min-w-0">
-                      {isAdmin && (
-                        <div className="pt-0.5 pr-2">
+                  {/* Subtle Gradient Background */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
+                  
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex gap-4 min-w-0">
+                        {isAdmin && (
                           <input 
                             type="checkbox" 
-                            className="shrink-0 w-4 h-4 accent-blue-600" 
+                            className="w-6 h-6 rounded-lg border-slate-700 bg-slate-800 text-blue-600 mt-1" 
                             checked={selectedLeads.includes(lead._id)} 
                             onChange={() => toggleSelectOne(lead._id)} 
                           />
+                        )}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="bg-blue-600/20 text-blue-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                              #{leadsPerPage === 'All' ? index + 1 : (currentPage - 1) * leadsPerPage + index + 1}
+                            </span>
+                            <span className="text-xs text-slate-500 font-bold uppercase tracking-widest truncate">{lead.course || 'General'}</span>
+                          </div>
+                          <h3 className="text-lg font-black text-white leading-tight uppercase truncate">{lead.name}</h3>
                         </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="font-bold text-slate-100 text-sm md:text-base break-words uppercase tracking-tight leading-tight">
-                          <span className="text-blue-500 mr-1">#{leadsPerPage === 'All' ? index + 1 : (currentPage - 1) * leadsPerPage + index + 1}</span> 
-                          {lead.name}
-                        </div>
-                        <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-0.5">{lead.course}</div>
+                      </div>
+                      <button 
+                        onClick={() => { setCurrentLead(lead); setNewStatus(lead.status); setShowStatusModal(true); }}
+                        className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-2xl text-[10px] font-black text-blue-400 uppercase tracking-widest shadow-lg"
+                      >
+                        {lead.status}
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-slate-800/40 p-3 rounded-2xl border border-slate-800/50">
+                        <p className="text-[9px] text-slate-500 font-black uppercase mb-1">College/Institution</p>
+                        <p className="text-xs text-slate-300 font-medium truncate">{lead.college || 'Not Specified'}</p>
+                      </div>
+                      <div className="bg-slate-800/40 p-3 rounded-2xl border border-slate-800/50">
+                        <p className="text-[9px] text-slate-500 font-black uppercase mb-1">Assigned Agent</p>
+                        <p className="text-xs text-slate-300 font-medium truncate">{lead.assignedTo?.name || 'Unassigned'}</p>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => { setCurrentLead(lead); setNewStatus(lead.status); setShowStatusModal(true); }}
-                      className="shrink-0 px-2.5 py-1 bg-slate-800 border border-slate-700 rounded-lg text-[9px] font-black text-slate-300 uppercase tracking-tighter"
-                    >
-                      {lead.status}
-                    </button>
-                  </div>
 
-                  {/* Middle Info: College & Assignment */}
-                  <div className="space-y-1 mb-4">
-                    <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                      <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                      <span className="truncate">{lead.college || 'No College Specified'}</span>
-                    </div>
-                    <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                      <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                      <span>Assigned: <span className="text-slate-300 font-medium">{lead.assignedTo ? lead.assignedTo.name : 'Not Assigned'}</span></span>
-                    </div>
-                  </div>
-
-                  {/* Bottom Actions: Fixed width icons */}
-                  <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-800/60">
-                    <div className="flex gap-2 w-full">
-                      <a href={`tel:${lead.phone}`} className="flex-1 h-10 bg-blue-600/10 hover:bg-blue-600/20 flex items-center justify-center rounded-xl text-blue-400 border border-blue-600/20 transition-colors">
-                        <Phone size={16} />
+                    <div className="flex items-center gap-3">
+                      <a href={`tel:${lead.phone}`} className="flex-[2] h-14 bg-blue-600 hover:bg-blue-500 flex items-center justify-center gap-3 rounded-2xl text-white font-bold transition-all shadow-[0_5px_15px_rgba(37,99,235,0.3)]">
+                        <Phone size={20} fill="currentColor" />
+                        <span>Call Lead</span>
                       </a>
-                      <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="flex-1 h-10 bg-green-600/10 hover:bg-green-600/20 flex items-center justify-center rounded-xl text-green-400 border border-green-600/20 transition-colors">
-                        <MessageCircle size={16} />
+                      <a href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="flex-1 h-14 bg-green-600/10 hover:bg-green-600/20 flex items-center justify-center rounded-2xl text-green-400 border border-green-600/30 transition-all">
+                        <MessageCircle size={24} />
                       </a>
                       {isAdmin && (
-                        <button onClick={() => handleDelete(lead._id)} className="flex-1 h-10 bg-red-600/10 hover:bg-red-600/20 flex items-center justify-center rounded-xl text-red-400 border border-red-600/20 transition-colors">
-                          <Trash2 size={16} />
+                        <button onClick={() => handleDelete(lead._id)} className="flex-1 h-14 bg-red-600/10 hover:bg-red-600/20 flex items-center justify-center rounded-2xl text-red-400 border border-red-600/30 transition-all">
+                          <Trash2 size={24} />
                         </button>
                       )}
                     </div>

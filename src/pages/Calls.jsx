@@ -195,8 +195,8 @@ const Calls = ({ user, cache, setCache }) => {
             )}
           </div>
         </div>
-        {/* Table */}
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left">
             <thead className="text-xs uppercase text-slate-500 border-b border-slate-800">
               <tr>
@@ -210,30 +210,20 @@ const Calls = ({ user, cache, setCache }) => {
             </thead>
             <tbody className="divide-y divide-slate-800">
               {loading ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-12">
-                    Loading logs...
-                  </td>
-                </tr>
-              ) : filteredLogs.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-12 text-slate-500">
-                    No interaction logs found.
-                  </td>
-                </tr>
+                <tr><td colSpan="6" className="text-center py-12">Loading logs...</td></tr>
+              ) : displayLogs.length === 0 ? (
+                <tr><td colSpan="6" className="text-center py-12 text-slate-500">No interaction logs found.</td></tr>
               ) : (
                 displayLogs.map((log) => (
                   <tr key={log._id} className="hover:bg-slate-800/50 transition-all">
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-100">
-                        {log.leadId?.name || 'Deleted Lead'}
-                      </div>
+                      <div className="font-semibold text-slate-100">{log.leadId?.name || 'Deleted Lead'}</div>
                       <div className="text-[10px] text-slate-500">{log.leadId?.phone}</div>
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <div className="flex items-center gap-2">
                         <User size={14} className="text-slate-500" />
-                        {typeof log.employeeId === 'object' ? log.employeeId?.name : 'N/A'}
+                        {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -242,37 +232,84 @@ const Calls = ({ user, cache, setCache }) => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-start gap-2 max-w-xs">
+                      <div className="flex items-start gap-2 max-w-xs text-sm text-slate-300 italic">
                         <MessageSquare size={14} className="text-slate-500 mt-1 shrink-0" />
-                        <p className="text-sm text-slate-300 italic">
-                          {log.remark || 'No remark'}
-                        </p>
+                        {log.remark || 'No remark'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => {
-                          setReminderLog(log);
-                          setReminderDateTime('');
-                          setShowReminder(true);
-                        }}
-                        className="text-blue-400 hover:text-blue-300"
-                        title="Set Reminder"
-                      >
+                      <button onClick={() => { setReminderLog(log); setReminderDateTime(''); setShowReminder(true); }} className="text-blue-400 hover:text-blue-300">
                         <Bell size={18} />
                       </button>
                     </td>
                     <td className="px-6 py-4 text-xs text-slate-500">
-                      <div className="flex items-center gap-1">
-                        <Clock size={12} />
-                        {new Date(log.createdAt).toLocaleString()}
-                      </div>
+                      {new Date(log.createdAt).toLocaleString()}
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="lg:hidden space-y-4 p-4">
+          {loading ? (
+            <div className="text-center py-20 text-slate-500">Loading logs...</div>
+          ) : displayLogs.length === 0 ? (
+            <div className="text-center py-20 bg-slate-900/30 rounded-3xl border border-dashed border-slate-800">
+              <p className="text-slate-500">No interaction logs found.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {displayLogs.map((log) => (
+                <div 
+                  key={log._id} 
+                  className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl relative overflow-hidden"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-base font-bold text-white uppercase">{log.leadId?.name || 'Deleted Lead'}</h3>
+                      <p className="text-[10px] text-slate-500 font-bold tracking-widest">{log.leadId?.phone}</p>
+                    </div>
+                    <span className="px-3 py-1 rounded-xl bg-blue-600/10 text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-600/20">
+                      {log.status}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-800/50 mb-4">
+                    <div className="flex items-start gap-3">
+                      <MessageSquare size={16} className="text-slate-500 shrink-0 mt-0.5" />
+                      <p className="text-sm text-slate-300 italic">"{log.remark || 'No remark added'}"</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-800/50">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                        <User size={12} />
+                        {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System'}
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                        <Clock size={12} />
+                        {new Date(log.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setReminderLog(log);
+                        setReminderDateTime('');
+                        setShowReminder(true);
+                      }}
+                      className="w-12 h-12 bg-blue-600/10 text-blue-400 flex items-center justify-center rounded-2xl border border-blue-600/20"
+                    >
+                      <Bell size={20} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         
         {/* Pagination Controls */}
