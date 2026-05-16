@@ -55,12 +55,7 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
         ...prev,
         [filterType === 'all' ? 'status' : filterType]: value
       }));
-      if (filterType !== 'all') setShowFilters(true);
-      else {
-        // Reset all filters if 'all' is clicked
-        setFilters({ status: '', course: '', college: '', assigned: 'all', employeeId: '' });
-        setSearchTerm('');
-      }
+      // Note: Removed setShowFilters(true) to ensure bar only shows on explicit click
     }
   }, [location.state]);
 
@@ -491,13 +486,15 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                       >
                         <Clock size={14} strokeWidth={2.5} />
                       </button>
-                      <button 
-                        onClick={() => handleDelete(lead._id)} 
-                        className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm"
-                        title="Delete Lead"
-                      >
-                        <Trash2 size={14} strokeWidth={2.5} />
-                      </button>
+                      {isAdmin && (
+                        <button 
+                          onClick={() => handleDelete(lead._id)} 
+                          className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                          title="Delete Lead"
+                        >
+                          <Trash2 size={14} strokeWidth={2.5} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -585,13 +582,15 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                   >
                     <Clock size={18} strokeWidth={2.5} />
                   </button>
-                  <button 
-                    onClick={() => handleDelete(lead._id)}
-                    className="flex-1 h-11 flex items-center justify-center bg-white border border-slate-200 text-red-500 rounded-xl hover:bg-red-50 active:scale-95 transition-all"
-                    title="Delete Lead"
-                  >
-                    <Trash2 size={18} strokeWidth={2.5} />
-                  </button>
+                  {isAdmin && (
+                    <button 
+                      onClick={() => handleDelete(lead._id)}
+                      className="flex-1 h-11 flex items-center justify-center bg-white border border-slate-200 text-red-500 rounded-xl hover:bg-red-50 active:scale-95 transition-all"
+                      title="Delete Lead"
+                    >
+                      <Trash2 size={18} strokeWidth={2.5} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))
