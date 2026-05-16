@@ -1,73 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --accent-primary: #10b981; /* Premium Green from image */
-  --accent-hover: #059669;
-  --border-color: #f1f5f9;
-  --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+@layer base {
+  :root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent-primary: #10b981;
+    --border-color: #f1f5f9;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900;
+    font-family: 'Outfit', sans-serif;
+  }
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Outfit', sans-serif; /* Modern premium font */
+@layer components {
+  .card {
+    @apply bg-white border border-slate-100 rounded-[2rem] p-6 shadow-xl shadow-slate-200/50;
+  }
+
+  .btn-primary {
+    @apply bg-[#10b981] hover:bg-[#059669] text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-green-600/20 flex items-center justify-center gap-2 active:scale-95;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100;
+  }
+
+  .sidebar-link.active {
+    @apply text-white bg-[#10b981] shadow-lg shadow-green-500/20;
+  }
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-}
-
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.sidebar-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  transition: all 0.2s;
-  color: #64748b;
-}
-
-.sidebar-link.active {
-  color: white;
-  background-color: var(--accent-primary);
-  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
-}
-
-.btn-primary {
-  background-color: var(--accent-primary);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s;
-}
-
-.card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 2.5rem; /* Ultra rounded like the image */
-  padding: 2rem;
-  box-shadow: var(--card-shadow);
-}
-
-input, select {
-  @apply bg-white border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all text-slate-900;
+input, select, textarea {
+  @apply bg-white border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#10b981] focus:border-transparent outline-none transition-all text-slate-900;
 }
 
 .text-premium {
