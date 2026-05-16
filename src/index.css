@@ -66,12 +66,11 @@ body {
   box-shadow: var(--card-shadow);
 }
 
-  input, select {
-    @apply bg-white border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all text-slate-900;
-  }
+input, select {
+  @apply bg-white border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all text-slate-900;
+}
 
-  .text-premium {
-    @apply bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent;
-  }
+.text-premium {
+  @apply bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent;
 }
 
