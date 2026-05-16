@@ -296,34 +296,33 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row justify-between gap-4">
-        <div className="flex gap-3 flex-1">
-          <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col lg:flex-row justify-between gap-4 items-center">
+        <div className="flex gap-3 w-full lg:flex-1">
+          <div className="relative flex-1 group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors" size={18} />
             <input 
               type="text" 
-              placeholder="Search by name or phone..." 
-              className="w-full pl-12 h-12 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-sm font-medium" 
+              placeholder="Search leads..." 
+              className="w-full pl-12 h-12 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all text-sm font-medium placeholder:text-slate-400" 
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
             />
           </div>
           <button 
             onClick={() => setShowFilters(!showFilters)} 
-            className={`px-5 h-12 border-2 rounded-2xl flex items-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
+            className={`w-14 h-12 border-2 rounded-2xl flex items-center justify-center transition-all ${
               showFilters 
               ? 'bg-green-600 border-green-600 text-white shadow-lg shadow-green-600/30' 
-              : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200 shadow-sm'
+              : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200 shadow-sm'
             }`}
           >
-            <Filter size={16} strokeWidth={2.5} />
-            <span>Filters</span>
+            <Filter size={20} strokeWidth={2.5} />
           </button>
           
-          <div className="hidden sm:flex items-center gap-2 bg-white border border-slate-100 px-4 rounded-2xl shadow-sm">
+          <div className="hidden md:flex items-center gap-2 bg-white border border-slate-100 px-4 rounded-2xl shadow-sm h-12">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Show:</span>
             <select 
-              className="h-8 bg-transparent border-none font-bold text-slate-900 text-xs outline-none"
+              className="h-full bg-transparent border-none font-bold text-slate-900 text-xs outline-none focus:ring-0"
               value={leadsPerPage}
               onChange={(e) => setLeadsPerPage(e.target.value)}
             >
@@ -332,13 +331,13 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
             </select>
           </div>
         </div>
-        <div className="flex gap-3">
-          <button onClick={() => setShowAddLead(true)} className="btn-primary h-12 px-6">
+        <div className="flex gap-3 w-full lg:w-auto">
+          <button onClick={() => setShowAddLead(true)} className="btn-primary h-12 px-6 flex-1 lg:flex-none">
             <UserPlus size={18} strokeWidth={2.5} /> 
             Add Lead
           </button>
           {isAdmin && (
-            <button onClick={() => setShowImport(true)} className="px-5 h-12 bg-white border border-slate-100 rounded-2xl flex items-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+            <button onClick={() => setShowImport(true)} className="px-5 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center gap-2 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex-1 lg:flex-none">
               <FileUp size={18} strokeWidth={2.5} /> 
               Import
             </button>
@@ -458,79 +457,69 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
             paginatedLeads.map((lead, index) => (
               <div 
                 key={lead._id} 
-                className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-premium relative group transition-all hover:scale-[1.01] hover:border-green-200"
+                className="bg-white border border-slate-100 rounded-3xl p-3 shadow-premium relative group transition-all"
               >
-                {/* Serial Number Badge */}
-                <div className="absolute top-6 left-6 w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] font-black z-20 shadow-lg">
-                  {(currentPage - 1) * (leadsPerPage === 'All' ? totalLeads : leadsPerPage) + index + 1}
-                </div>
-
-                {/* Visual Accent Circle */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-green-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-2xl"></div>
-
-                {/* Header: Name and Info */}
-                <div className="flex justify-between items-start mb-8 relative z-10">
-                  <div className="flex gap-5">
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-2xl font-black text-slate-400 border border-white shadow-inner">
+                {/* Header Row: Info */}
+                <div className="flex justify-between items-start gap-2 mb-2">
+                  <div className="flex gap-3 min-w-0">
+                    <div className="w-10 h-10 shrink-0 rounded-xl bg-slate-50 flex items-center justify-center text-lg font-black text-slate-400 border border-white shadow-inner">
                       {lead.name.charAt(0)}
                     </div>
-                    <div>
-                      <h3 className="text-xl font-black text-slate-900 leading-tight uppercase tracking-tight">{lead.name}</h3>
-                      <p className="text-sm font-bold text-slate-400 mt-1 flex items-center gap-2">
-                        <Phone size={12} className="text-slate-300" />
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-black text-slate-900 truncate uppercase leading-tight">{lead.name}</h3>
+                      <p className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                        <Phone size={8} />
                         {lead.phone}
                       </p>
-                      <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 bg-green-50 rounded-full border border-green-100/50">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                        <p className="text-[10px] font-black text-green-600 uppercase tracking-widest">{lead.college || 'General Pool'}</p>
-                      </div>
                     </div>
                   </div>
-                  <button onClick={() => handleDelete(lead._id)} className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
-                    <Trash2 size={20} />
-                  </button>
                 </div>
 
-                {/* Primary Actions: High Impact Call & WhatsApp */}
-                <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
+                {/* Info Row: College & Status */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <div className="px-2 py-0.5 bg-green-50 rounded-lg border border-green-100/50">
+                    <p className="text-[8px] font-black text-green-600 uppercase tracking-widest">{lead.college || 'General'}</p>
+                  </div>
+                  <div className={`px-2 py-0.5 rounded-lg border ${
+                    lead.status === 'Won' ? 'bg-green-50 border-green-100 text-green-600' :
+                    lead.status === 'Lost' ? 'bg-red-50 border-red-100 text-red-600' :
+                    'bg-blue-50 border-blue-100 text-blue-600'
+                  }`}>
+                    <p className="text-[8px] font-black uppercase tracking-widest">{lead.status}</p>
+                  </div>
+                </div>
+
+                {/* Unified Action Bar: 4 Icons */}
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-50">
                   <a 
                     href={`tel:${lead.phone}`} 
-                    className="flex items-center justify-center gap-3 bg-gradient-to-br from-green-600 to-green-700 text-white h-14 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-600/30 active:scale-95 transition-all"
+                    className="flex-1 h-10 flex items-center justify-center bg-green-600 text-white rounded-xl shadow-lg shadow-green-600/20 active:scale-90 transition-all"
+                    title="Call"
                   >
-                    <Phone size={18} fill="currentColor" />
-                    Call Now
+                    <Phone size={16} fill="currentColor" />
                   </a>
                   <a 
                     href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-3 bg-white border-2 border-slate-100 text-green-600 h-14 rounded-2xl font-black text-xs uppercase tracking-widest hover:border-green-600 hover:bg-green-50/30 active:scale-95 transition-all shadow-sm"
+                    className="flex-1 h-10 flex items-center justify-center bg-white border border-slate-200 text-green-600 rounded-xl hover:bg-green-50 active:scale-90 transition-all"
+                    title="WhatsApp"
                   >
-                    <MessageSquare size={18} strokeWidth={3} />
-                    WhatsApp
+                    <MessageSquare size={16} strokeWidth={2.5} />
                   </a>
-                </div>
-
-                {/* Status & Update Section: Elevated Design */}
-                <div className="bg-slate-50/80 backdrop-blur-sm rounded-[1.5rem] p-5 border border-white flex items-center justify-between shadow-inner relative z-10">
-                  <div className="flex flex-col gap-1">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Lead Status</p>
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${
-                        lead.status === 'Won' ? 'bg-green-500' :
-                        lead.status === 'Lost' ? 'bg-red-500' :
-                        'bg-blue-500'
-                      }`}></span>
-                      <span className="text-xs font-black text-slate-900 uppercase tracking-wide">
-                        {lead.status}
-                      </span>
-                    </div>
-                  </div>
                   <button 
                     onClick={() => { setCurrentLead(lead); setShowStatusModal(true); }}
-                    className="h-11 px-5 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:shadow-md transition-all active:scale-95 shadow-sm"
+                    className="flex-1 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 active:scale-90 transition-all"
+                    title="Update Status"
                   >
-                    Update
+                    <Clock size={16} strokeWidth={2.5} />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(lead._id)}
+                    className="flex-1 h-10 flex items-center justify-center bg-white border border-slate-200 text-red-500 rounded-xl hover:bg-red-50 active:scale-90 transition-all"
+                    title="Delete Lead"
+                  >
+                    <Trash2 size={16} strokeWidth={2.5} />
                   </button>
                 </div>
               </div>

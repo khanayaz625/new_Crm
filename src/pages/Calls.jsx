@@ -131,37 +131,36 @@ const Calls = ({ user, cache, setCache }) => {
       {/* Header and Filters */}
       <div className="card">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
-          <div>
+          <div className="shrink-0">
             <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
               <div className="w-12 h-12 bg-green-600/10 rounded-2xl flex items-center justify-center">
                 <Phone className="text-green-600" size={24} />
               </div>
-              Call & Interaction Logs
+              Interactions
             </h3>
-            <p className="text-slate-500 text-xs font-medium mt-1 ml-15">Track all communications with your leads</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 w-full lg:w-auto">
-            <div className="relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-full lg:flex-1 lg:max-w-4xl">
+            <div className="relative group">
               <input
                 type="text"
                 placeholder="Search Lead..."
-                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
+                className="w-full bg-white border border-slate-100 rounded-xl px-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <input
               type="date"
-              className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
+              className="bg-white border border-slate-100 rounded-xl px-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
             />
             <select
-              className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
+              className="bg-white border border-slate-100 rounded-xl px-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
-              <option value="">All Statuses</option>
+              <option value="">Status</option>
               {[
                 'New', 'Contacted', 'Interested', 'Not Interested', 'Busy', 
                 'Callback', 'Wrong Number', 'Switch Off', 'Not Reachable', 
@@ -172,11 +171,11 @@ const Calls = ({ user, cache, setCache }) => {
             </select>
             {isAdmin && (
               <select
-                className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
+                className="bg-white border border-slate-100 rounded-xl px-4 h-11 text-sm outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
                 value={filterEmployeeId}
                 onChange={(e) => setFilterEmployeeId(e.target.value)}
               >
-                <option value="">All Agents</option>
+                <option value="">Agent</option>
                 {employees.map(emp => (
                   <option key={emp._id} value={emp._id}>{emp.name}</option>
                 ))}
@@ -263,51 +262,50 @@ const Calls = ({ user, cache, setCache }) => {
               <p className="text-slate-500 font-medium">No interaction logs found.</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {displayLogs.map((log) => (
                 <div 
                   key={log._id} 
-                  className="bg-white border border-slate-100 rounded-[2.5rem] p-7 shadow-xl shadow-slate-200/50 relative overflow-hidden"
+                  className="bg-white border border-slate-100 rounded-2xl p-3 shadow-premium relative overflow-hidden"
                 >
-                  <div className="flex justify-between items-start mb-5">
-                    <div>
-                      <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase leading-tight">{log.leadId?.name || 'Deleted Lead'}</h3>
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1">{log.leadId?.phone}</p>
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-black text-slate-900 truncate uppercase leading-tight">{log.leadId?.name || 'Deleted'}</h3>
+                      <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{log.leadId?.phone}</p>
                     </div>
-                    <span className="px-3 py-1.5 rounded-2xl bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest border border-green-100 shadow-sm">
+                    <span className="px-2 py-0.5 rounded-lg bg-green-50 text-green-600 text-[8px] font-black uppercase tracking-widest border border-green-100 shrink-0">
                       {log.status}
                     </span>
                   </div>
  
-                  <div className="bg-slate-50 p-5 rounded-[2rem] border border-slate-100/50 mb-6 relative">
-                    <div className="flex items-start gap-3">
-                      <MessageSquare size={16} className="text-slate-300 shrink-0 mt-1" />
-                      <p className="text-sm text-slate-600 font-medium italic leading-relaxed">"{log.remark || 'No remark added'}"</p>
-                    </div>
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100/50 mb-3">
+                    <p className="text-[11px] text-slate-600 font-medium italic line-clamp-2 leading-tight">"{log.remark || 'No remark'}"</p>
                   </div>
  
-                  <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2.5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">
-                          {(typeof log.employeeId === 'object' ? log.employeeId?.name : 'S').charAt(0)}
-                        </div>
-                        {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System Agent'}
-                      </div>
-                      <div className="flex items-center gap-2.5 text-[10px] text-slate-400 font-medium ml-1">
-                        <Clock size={12} className="text-slate-300" />
-                        {new Date(log.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-50">
+                    <a 
+                      href={`tel:${log.leadId?.phone}`} 
+                      className="flex-1 h-9 flex items-center justify-center bg-green-600 text-white rounded-xl shadow-sm active:scale-90 transition-all"
+                    >
+                      <Phone size={14} fill="currentColor" />
+                    </a>
+                    <a 
+                      href={`https://wa.me/${log.leadId?.phone?.replace(/[^0-9]/g, '')}`} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex-1 h-9 flex items-center justify-center bg-white border border-slate-200 text-green-600 rounded-xl active:scale-90 transition-all"
+                    >
+                      <MessageSquare size={14} strokeWidth={2.5} />
+                    </a>
                     <button
                       onClick={() => {
                         setReminderLog(log);
                         setReminderDateTime('');
                         setShowReminder(true);
                       }}
-                      className="w-14 h-14 bg-white border border-slate-200 text-slate-400 flex items-center justify-center rounded-2xl shadow-sm hover:text-green-600 hover:border-green-200 hover:bg-green-50 transition-all active:scale-95"
+                      className="flex-1 h-9 bg-white border border-slate-200 text-slate-400 flex items-center justify-center rounded-xl hover:text-green-600 transition-all active:scale-90 shadow-sm"
                     >
-                      <Bell size={24} />
+                      <Bell size={14} />
                     </button>
                   </div>
                 </div>
