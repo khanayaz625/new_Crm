@@ -212,7 +212,7 @@ const Calls = ({ user, cache, setCache }) => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
-                          {(typeof log.employeeId === 'object' ? log.employeeId?.name : 'S').charAt(0)}
+                          {(log.employeeId?.name || 'S').charAt(0)}
                         </div>
                         <div className="text-sm font-medium text-slate-700">
                           {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System Agent'}
