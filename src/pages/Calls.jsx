@@ -130,26 +130,34 @@ const Calls = ({ user, cache, setCache }) => {
     <div className="space-y-6">
       {/* Header and Filters */}
       <div className="card">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <Phone className="text-blue-400" size={24} /> Call & Interaction Logs
-          </h3>
-          <div className="flex flex-wrap gap-3 w-full sm:w-auto">
-            <input
-              type="text"
-              placeholder="Search Lead..."
-              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm flex-1 sm:w-48 outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
+          <div>
+            <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
+              <div className="w-12 h-12 bg-green-600/10 rounded-2xl flex items-center justify-center">
+                <Phone className="text-green-600" size={24} />
+              </div>
+              Call & Interaction Logs
+            </h3>
+            <p className="text-slate-500 text-xs font-medium mt-1 ml-15">Track all communications with your leads</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 w-full lg:w-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search Lead..."
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
             <input
               type="date"
-              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none"
+              className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
             />
             <select
-              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none"
+              className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-sm"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -159,91 +167,70 @@ const Calls = ({ user, cache, setCache }) => {
                 'Callback', 'Wrong Number', 'Switch Off', 'Not Reachable', 
                 'Follow Up', 'Meeting Scheduled', 'Qualified', 'Lost', 'Won', 'Archive'
               ].map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
+                <option key={s} value={s}>{s}</option>
               ))}
             </select>
-            {/* Datetime range filters */}
-            <input
-              type="datetime-local"
-              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none"
-              value={filterStartDateTime}
-              onChange={(e) => setFilterStartDateTime(e.target.value)}
-              placeholder="Start DateTime"
-            />
-            <input
-              type="datetime-local"
-              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none"
-              value={filterEndDateTime}
-              onChange={(e) => setFilterEndDateTime(e.target.value)}
-              placeholder="End DateTime"
-            />
-            {isAdmin && (
-              <select
-                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none"
-                value={filterEmployeeId}
-                onChange={(e) => setFilterEmployeeId(e.target.value)}
-              >
-                <option value="">All Employees</option>
-                {employees.map((emp) => (
-                  <option key={emp._id} value={emp._id}>
-                    {emp.name}
-                  </option>
-                ))}
-              </select>
-            )}
           </div>
         </div>
         {/* Desktop Table View */}
         <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="text-xs uppercase text-slate-500 border-b border-slate-800">
+            <thead className="text-[10px] uppercase text-slate-400 font-black tracking-widest border-b border-slate-100 bg-slate-50/50">
               <tr>
-                <th className="px-6 py-4">Lead</th>
-                <th className="px-6 py-4">Agent</th>
-                <th className="px-6 py-4">Result</th>
-                <th className="px-6 py-4">Remark</th>
-                <th className="px-6 py-4">Reminder</th>
-                <th className="px-6 py-4">Time</th>
+                <th className="px-6 py-5">Lead Details</th>
+                <th className="px-6 py-5">Assigned Agent</th>
+                <th className="px-6 py-5">Interaction Status</th>
+                <th className="px-6 py-5">Agent Remarks</th>
+                <th className="px-6 py-5 text-center">Actions</th>
+                <th className="px-6 py-5">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-slate-50">
               {loading ? (
-                <tr><td colSpan="6" className="text-center py-12">Loading logs...</td></tr>
+                <tr><td colSpan="6" className="text-center py-20 text-slate-400 font-medium italic">Refreshing logs...</td></tr>
               ) : displayLogs.length === 0 ? (
-                <tr><td colSpan="6" className="text-center py-12 text-slate-500">No interaction logs found.</td></tr>
+                <tr><td colSpan="6" className="text-center py-20 text-slate-400 font-medium">No interaction logs found.</td></tr>
               ) : (
                 displayLogs.map((log) => (
-                  <tr key={log._id} className="hover:bg-slate-800/50 transition-all">
+                  <tr key={log._id} className="hover:bg-slate-50/50 transition-all group">
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-100">{log.leadId?.name || 'Deleted Lead'}</div>
-                      <div className="text-[10px] text-slate-500">{log.leadId?.phone}</div>
+                      <div className="font-bold text-slate-900">{log.leadId?.name || 'Deleted Lead'}</div>
+                      <div className="text-[10px] text-slate-400 font-black uppercase tracking-tighter">{log.leadId?.phone}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <User size={14} className="text-slate-500" />
-                        {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System'}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">
+                          {(typeof log.employeeId === 'object' ? log.employeeId?.name : 'S').charAt(0)}
+                        </div>
+                        <div className="text-sm font-medium text-slate-700">
+                          {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System Agent'}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-2 py-0.5 rounded-full bg-blue-600/10 text-blue-400 text-[10px] font-bold uppercase tracking-wider border border-blue-600/20">
+                      <span className="px-3 py-1.5 rounded-full bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest border border-green-100">
                         {log.status}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-start gap-2 max-w-xs text-sm text-slate-300 italic">
-                        <MessageSquare size={14} className="text-slate-500 mt-1 shrink-0" />
-                        {log.remark || 'No remark'}
+                      <div className="flex items-start gap-2 max-w-xs text-sm text-slate-500 font-medium line-clamp-2">
+                        <MessageSquare size={14} className="text-slate-300 mt-1 shrink-0" />
+                        {log.remark || 'No remark added'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <button onClick={() => { setReminderLog(log); setReminderDateTime(''); setShowReminder(true); }} className="text-blue-400 hover:text-blue-300">
-                        <Bell size={18} />
-                      </button>
+                      <div className="flex justify-center">
+                        <button 
+                          onClick={() => { setReminderLog(log); setReminderDateTime(''); setShowReminder(true); }} 
+                          className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-green-600 hover:border-green-200 hover:bg-green-50 transition-all shadow-sm"
+                        >
+                          <Bell size={18} />
+                        </button>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 text-xs text-slate-500">
-                      {new Date(log.createdAt).toLocaleString()}
+                    <td className="px-6 py-4">
+                      <div className="text-xs font-bold text-slate-400">{new Date(log.createdAt).toLocaleDateString()}</div>
+                      <div className="text-[10px] text-slate-300 font-medium">{new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                     </td>
                   </tr>
                 ))
@@ -253,45 +240,50 @@ const Calls = ({ user, cache, setCache }) => {
         </div>
 
         {/* Mobile Card View */}
-        <div className="lg:hidden space-y-4 p-4">
+         <div className="lg:hidden space-y-6 p-4">
           {loading ? (
-            <div className="text-center py-20 text-slate-500">Loading logs...</div>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
+              <Loader2 className="animate-spin text-green-600" size={32} />
+              <p className="font-medium">Refreshing logs...</p>
+            </div>
           ) : displayLogs.length === 0 ? (
-            <div className="text-center py-20 bg-slate-900/30 rounded-3xl border border-dashed border-slate-800">
-              <p className="text-slate-500">No interaction logs found.</p>
+            <div className="text-center py-20 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+              <p className="text-slate-500 font-medium">No interaction logs found.</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {displayLogs.map((log) => (
                 <div 
                   key={log._id} 
-                  className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl relative overflow-hidden"
+                  className="bg-white border border-slate-100 rounded-[2.5rem] p-7 shadow-xl shadow-slate-200/50 relative overflow-hidden"
                 >
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex justify-between items-start mb-5">
                     <div>
-                      <h3 className="text-base font-bold text-white uppercase">{log.leadId?.name || 'Deleted Lead'}</h3>
-                      <p className="text-[10px] text-slate-500 font-bold tracking-widest">{log.leadId?.phone}</p>
+                      <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase leading-tight">{log.leadId?.name || 'Deleted Lead'}</h3>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1">{log.leadId?.phone}</p>
                     </div>
-                    <span className="px-3 py-1 rounded-xl bg-blue-600/10 text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-600/20">
+                    <span className="px-3 py-1.5 rounded-2xl bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest border border-green-100 shadow-sm">
                       {log.status}
                     </span>
                   </div>
-
-                  <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-800/50 mb-4">
+ 
+                  <div className="bg-slate-50 p-5 rounded-[2rem] border border-slate-100/50 mb-6 relative">
                     <div className="flex items-start gap-3">
-                      <MessageSquare size={16} className="text-slate-500 shrink-0 mt-0.5" />
-                      <p className="text-sm text-slate-300 italic">"{log.remark || 'No remark added'}"</p>
+                      <MessageSquare size={16} className="text-slate-300 shrink-0 mt-1" />
+                      <p className="text-sm text-slate-600 font-medium italic leading-relaxed">"{log.remark || 'No remark added'}"</p>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-800/50">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                        <User size={12} />
-                        {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System'}
+ 
+                  <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2.5 text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">
+                          {(typeof log.employeeId === 'object' ? log.employeeId?.name : 'S').charAt(0)}
+                        </div>
+                        {typeof log.employeeId === 'object' ? log.employeeId?.name : 'System Agent'}
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] text-slate-500">
-                        <Clock size={12} />
+                      <div className="flex items-center gap-2.5 text-[10px] text-slate-400 font-medium ml-1">
+                        <Clock size={12} className="text-slate-300" />
                         {new Date(log.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                       </div>
                     </div>
@@ -301,9 +293,9 @@ const Calls = ({ user, cache, setCache }) => {
                         setReminderDateTime('');
                         setShowReminder(true);
                       }}
-                      className="w-12 h-12 bg-blue-600/10 text-blue-400 flex items-center justify-center rounded-2xl border border-blue-600/20"
+                      className="w-14 h-14 bg-white border border-slate-200 text-slate-400 flex items-center justify-center rounded-2xl shadow-sm hover:text-green-600 hover:border-green-200 hover:bg-green-50 transition-all active:scale-95"
                     >
-                      <Bell size={20} />
+                      <Bell size={24} />
                     </button>
                   </div>
                 </div>
@@ -314,21 +306,21 @@ const Calls = ({ user, cache, setCache }) => {
         
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-slate-800 mt-4">
+          <div className="flex items-center justify-between p-6 border-t border-slate-50 bg-slate-50/30 mt-4">
             <button 
               disabled={currentPage === 1} 
               onClick={() => setCurrentPage(p => p - 1)}
-              className="px-4 py-2 border border-slate-700 rounded-lg text-sm disabled:opacity-50"
+              className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm"
             >
               Previous
             </button>
-            <span className="text-sm text-slate-400">
-              Page <span className="font-bold text-white">{currentPage}</span> of {finalTotalPages}
+            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+              Page <span className="text-slate-900">{currentPage}</span> of {finalTotalPages}
             </span>
             <button 
               disabled={currentPage === finalTotalPages} 
               onClick={() => setCurrentPage(p => p + 1)}
-              className="px-4 py-2 border border-slate-700 rounded-lg text-sm disabled:opacity-50"
+              className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm"
             >
               Next
             </button>
@@ -337,34 +329,39 @@ const Calls = ({ user, cache, setCache }) => {
       </div>
       {/* Reminder Modal */}
       {showReminder && reminderLog && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md shadow-2xl">
-            <h3 className="text-xl font-bold mb-4">Set Reminder</h3>
-            <p className="mb-2 text-slate-300">
-              Lead: <span className="text-white font-medium">{reminderLog.leadId?.name || 'Unknown'}</span>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[70] p-4">
+          <div className="bg-white border border-slate-100 p-8 rounded-[2.5rem] w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-slate-200">
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-2">Set Follow-up Reminder</h3>
+            <p className="text-sm text-slate-500 font-medium mb-8">
+              Setting reminder for: <span className="text-slate-900 font-bold">{reminderLog.leadId?.name || 'Unknown Lead'}</span>
             </p>
-            <div className="mb-4">
-              <label className="block text-sm text-slate-400 mb-1">Date & Time</label>
-              <input
-                type="datetime-local"
-                className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm outline-none"
-                value={reminderDateTime}
-                onChange={(e) => setReminderDateTime(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowReminder(false)}
-                className="flex-1 px-4 py-2 border border-slate-800 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSetReminder}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded font-medium transition-colors"
-              >
-                Save Reminder
-              </button>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Reminder Date & Time</label>
+                <input
+                  type="datetime-local"
+                  className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 font-bold text-slate-900 outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                  value={reminderDateTime}
+                  onChange={(e) => setReminderDateTime(e.target.value)}
+                />
+              </div>
+              
+              <div className="flex gap-4 pt-4">
+                <button
+                  onClick={() => setShowReminder(false)}
+                  className="flex-1 h-14 border border-slate-200 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSetReminder}
+                  disabled={!reminderDateTime}
+                  className="flex-1 btn-primary h-14 font-bold shadow-xl shadow-green-600/20 disabled:opacity-50 disabled:shadow-none"
+                >
+                  Save Reminder
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -76,53 +76,56 @@ const Team = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Team Management</h2>
-        <button onClick={() => setShowAdd(true)} className="btn-primary">
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Team Management</h2>
+          <p className="text-slate-500 text-xs font-medium mt-1">Manage your agents and access controls</p>
+        </div>
+        <button onClick={() => setShowAdd(true)} className="btn-primary h-12 shadow-xl shadow-green-600/20">
           <UserPlus size={18} />
-          <span>Add Member</span>
+          <span>Add New Member</span>
         </button>
       </div>
 
       {showAdd && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md shadow-2xl">
-            <h3 className="text-xl font-bold mb-6">Add Team Member</h3>
-            <form onSubmit={handleAddEmployee} className="space-y-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-slate-100 p-8 rounded-[2.5rem] w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-slate-200">
+            <h3 className="text-2xl font-black text-slate-900 mb-6 tracking-tight">Add Team Member</h3>
+            <form onSubmit={handleAddEmployee} className="space-y-5">
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Full Name</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Full Name</label>
                 <input 
                   type="text" 
-                  className="w-full" 
+                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium" 
                   value={newEmp.name}
                   onChange={(e) => setNewEmp({...newEmp, name: e.target.value})}
                   required 
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Email Address</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Email Address</label>
                 <input 
                   type="email" 
-                  className="w-full" 
+                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium" 
                   value={newEmp.email}
                   onChange={(e) => setNewEmp({...newEmp, email: e.target.value})}
                   required 
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Password</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Password</label>
                 <input 
                   type="password" 
-                  className="w-full" 
+                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium" 
                   value={newEmp.password}
                   onChange={(e) => setNewEmp({...newEmp, password: e.target.value})}
                   required 
                 />
               </div>
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setShowAdd(false)} className="flex-1 px-4 py-2 border border-slate-800 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 btn-primary">Create Account</button>
+              <div className="flex gap-4 pt-6">
+                <button type="button" onClick={() => setShowAdd(false)} className="flex-1 h-14 border border-slate-200 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all">Cancel</button>
+                <button type="submit" className="flex-1 btn-primary h-14 font-bold shadow-xl shadow-green-600/20">Create Account</button>
               </div>
             </form>
           </div>
@@ -130,67 +133,70 @@ const Team = () => {
       )}
 
       {showEdit && editEmp && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md shadow-2xl">
-            <h3 className="text-xl font-bold mb-6">Edit Team Member</h3>
-            <form onSubmit={handleEditEmployee} className="space-y-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-slate-100 p-8 rounded-[2.5rem] w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-slate-200">
+            <h3 className="text-2xl font-black text-slate-900 mb-6 tracking-tight">Edit Member Profile</h3>
+            <form onSubmit={handleEditEmployee} className="space-y-5">
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Full Name</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Full Name</label>
                 <input 
                   type="text" 
-                  className="w-full" 
+                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium" 
                   value={editEmp.name}
                   onChange={(e) => setEditEmp({...editEmp, name: e.target.value})}
                   required 
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Email Address</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Email Address</label>
                 <input 
                   type="email" 
-                  className="w-full" 
+                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium" 
                   value={editEmp.email}
                   onChange={(e) => setEditEmp({...editEmp, email: e.target.value})}
                   required 
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Password <span className="text-xs text-slate-500">(leave blank to keep current)</span></label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">New Password <span className="text-[8px] opacity-50">(Optional)</span></label>
                 <input 
                   type="password" 
-                  className="w-full" 
+                  className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium" 
+                  placeholder="Leave blank to keep current"
                   onChange={(e) => setEditEmp({...editEmp, password: e.target.value})}
                 />
               </div>
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setShowEdit(false)} className="flex-1 px-4 py-2 border border-slate-800 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 btn-primary">Save Changes</button>
+              <div className="flex gap-4 pt-6">
+                <button type="button" onClick={() => setShowEdit(false)} className="flex-1 h-14 border border-slate-200 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all">Cancel</button>
+                <button type="submit" className="flex-1 btn-primary h-14 font-bold shadow-xl shadow-green-600/20">Save Changes</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {employees.map((emp) => (
-          <div key={emp._id} className="card flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center text-xl font-bold mb-4">
+          <div key={emp._id} className="bg-white border border-slate-100 p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 flex flex-col items-center text-center relative overflow-hidden group hover:border-green-200 transition-all">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 group-hover:bg-green-50 transition-colors"></div>
+            
+            <div className="w-20 h-20 rounded-[2rem] bg-green-50 text-green-600 flex items-center justify-center text-2xl font-black mb-6 shadow-sm border border-green-100 relative z-10">
               {emp.name.charAt(0)}
             </div>
-            <h3 className="font-bold text-lg">{emp.name}</h3>
-            <div className="flex items-center gap-2 text-slate-400 text-sm mt-1">
-              <Mail size={14} />
+            <h3 className="font-black text-xl text-slate-900 tracking-tight relative z-10">{emp.name}</h3>
+            <div className="flex items-center gap-2 text-slate-400 text-xs font-bold mt-2 relative z-10">
+              <Mail size={14} className="text-slate-300" />
               <span>{emp.email}</span>
             </div>
-            <div className="mt-4 flex items-center gap-2 bg-slate-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400 border border-slate-700">
-              <Shield size={12} />
+            <div className="mt-6 flex items-center gap-2 bg-slate-50 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border border-slate-100 relative z-10">
+              <Shield size={12} className="text-slate-300" />
               {emp.role}
             </div>
-            <div className="mt-6 pt-6 border-t border-slate-800 w-full flex justify-around">
-              <button onClick={() => { setEditEmp(emp); setShowEdit(true); }} className="text-slate-500 hover:text-white transition-all text-sm font-medium">Edit Profile</button>
+            <div className="mt-10 pt-8 border-t border-slate-50 w-full flex justify-between relative z-10">
+              <button onClick={() => { setEditEmp(emp); setShowEdit(true); }} className="text-slate-900 font-black text-[10px] uppercase tracking-widest hover:text-green-600 transition-colors">Edit Profile</button>
               <button 
                 onClick={() => handleDelete(emp._id)}
-                className="text-red-500/70 hover:text-red-500 transition-all"
+                className="w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors"
               >
                 <Trash2 size={18} />
               </button>
