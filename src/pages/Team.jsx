@@ -50,7 +50,9 @@ const Team = () => {
       setShowEdit(false);
       fetchEmployees();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update employee');
+      console.error('Update Employee Error:', err);
+      const errorMsg = err.response?.data?.message || err.message || 'Server connection failed';
+      alert(`Could not update employee: ${errorMsg}`);
     }
   };
 
