@@ -230,12 +230,29 @@ const Calls = ({ user, cache, setCache }) => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex justify-center">
+                      <div className="flex justify-center items-center gap-2">
+                        <a 
+                          href={`tel:${log.leadId?.phone}`} 
+                          className="w-8 h-8 flex items-center justify-center bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                          title="Call"
+                        >
+                          <Phone size={14} fill="currentColor" />
+                        </a>
+                        <a 
+                          href={`https://wa.me/${log.leadId?.phone?.replace(/[^0-9]/g, '')}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="w-8 h-8 flex items-center justify-center bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                          title="WhatsApp"
+                        >
+                          <MessageSquare size={14} strokeWidth={2.5} />
+                        </a>
                         <button 
                           onClick={() => { setReminderLog(log); setReminderDateTime(''); setShowReminder(true); }} 
-                          className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-green-600 hover:border-green-200 hover:bg-green-50 transition-all shadow-sm"
+                          className="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-400 hover:text-green-600 hover:border-green-200 hover:bg-green-50 transition-all shadow-sm"
+                          title="Set Reminder"
                         >
-                          <Bell size={18} />
+                          <Bell size={14} />
                         </button>
                       </div>
                     </td>

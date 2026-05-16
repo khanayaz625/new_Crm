@@ -434,7 +434,38 @@ const Leads = ({ user, cache, setCache, metadataCache, setMetadataCache }) => {
                   <td className="px-6 py-4"><span className="text-xs font-black uppercase text-blue-600 bg-blue-50 px-2 py-1 rounded-full">{lead.status}</span></td>
                   <td className="px-6 py-4">{lead.assignedTo?.name || 'Unassigned'}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => { setCurrentLead(lead); setShowStatusModal(true); }} className="text-blue-600 font-bold text-sm">Update</button>
+                    <div className="flex justify-end items-center gap-2">
+                      <a 
+                        href={`tel:${lead.phone}`} 
+                        className="w-8 h-8 flex items-center justify-center bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                        title="Call"
+                      >
+                        <Phone size={14} fill="currentColor" />
+                      </a>
+                      <a 
+                        href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="w-8 h-8 flex items-center justify-center bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                        title="WhatsApp"
+                      >
+                        <MessageSquare size={14} strokeWidth={2.5} />
+                      </a>
+                      <button 
+                        onClick={() => { setCurrentLead(lead); setShowStatusModal(true); }} 
+                        className="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                        title="Update Status"
+                      >
+                        <Clock size={14} strokeWidth={2.5} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(lead._id)} 
+                        className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                        title="Delete Lead"
+                      >
+                        <Trash2 size={14} strokeWidth={2.5} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
