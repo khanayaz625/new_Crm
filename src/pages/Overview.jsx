@@ -37,12 +37,32 @@ const Overview = ({ user }) => {
 
   const fetchStats = async () => {
     try {
+      // Try fetching from the new optimized stats endpoint
       const res = await axios.get(`${API_BASE}/leads/stats`, {
         headers: { 'x-auth-token': localStorage.getItem('token') }
       });
       setStats(res.data);
     } catch (err) {
-      console.error(err);
+      console.warn("Stats API failed, falling back to client-side calculation", err);
+      // Fallback: Fetch all leads and calculate stats manually (old way)
+      try {
+        const res = await axios.get(`${API_BASE}/leads`, {
+          headers: { 'x-auth-token': localStorage.getItem('token') }
+        });
+        const leads = Array.isArray(res.data) ? res.data : (res.data.leads || []);
+        
+        setStats({
+          total: leads.length,
+          pending: leads.filter(l => l.status === 'New').length,
+          followUp: leads.filter(l => l.status === 'Follow Up').length,
+          assigned: leads.filter(l => l.assignedTo).length,
+          unassigned: leads.filter(l => !l.assignedTo).length,
+          won: leads.filter(l => l.status === 'Won').length,
+          called: leads.filter(l => l.assignedTo && l.status !== 'New').length,
+        });
+      } catch (fallbackErr) {
+        console.error("Dashboard fallback failed", fallbackErr);
+      }
     } finally {
       setLoading(false);
     }
