@@ -31,8 +31,8 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black p-4">
       <div className="w-full max-w-md p-8 glass rounded-[2.5rem] shadow-2xl border border-white/20 animate-in fade-in zoom-in-95 duration-500">
         <div className="flex flex-col items-center mb-10">
-          <div className="mb-6 bg-white p-4 rounded-3xl inline-block shadow-xl shadow-white/5">
-            <img src="/logo.png" alt="DigiCoders Logo" className="h-16 object-contain" />
+          <div className="mb-6 bg-white px-6 py-4 rounded-3xl inline-block shadow-xl shadow-white/5">
+            <span className="text-2xl font-black text-slate-800 tracking-tight">Next Lead</span>
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">Welcome Back</h1>
           <p className="text-slate-400 font-medium mt-1">Sign in to your CRM dashboard</p>

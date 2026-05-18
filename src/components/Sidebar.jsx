@@ -44,7 +44,7 @@ const Sidebar = ({ user, isOpen, setIsOpen }) => {
       <aside className={`w-64 h-screen bg-white border-r border-slate-100 flex flex-col p-4 fixed left-0 top-0 z-[90] transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} shadow-xl shadow-slate-200/50`}>
         <div className="flex items-center gap-3 px-4 py-8 mb-8 border-b border-slate-50">
           <div className="w-full h-14 flex items-center justify-center bg-slate-50 rounded-2xl p-3 border border-slate-100 shadow-inner">
-            <img src="/logo.png" alt="DigiCoders Logo" className="h-full object-contain filter grayscale opacity-80" />
+            <span className="text-xl font-black text-slate-800 tracking-tight">Next Lead</span>
           </div>
         </div>
 

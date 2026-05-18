@@ -60,7 +60,7 @@ const Dashboard = () => {
         <header className="mb-8 mt-12 lg:mt-0 flex items-center justify-between gap-4 relative">
           <div className="flex-1 min-w-0">
             <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight truncate">Good Day, {user?.name}</h1>
-            <p className="text-slate-500 text-xs md:text-sm font-medium truncate">Welcome to DigiCoders CRM</p>
+            <p className="text-slate-500 text-xs md:text-sm font-medium truncate">Welcome to Next Lead CRM</p>
           </div>
           
           <div className="flex items-center gap-2 md:gap-4 shrink-0">

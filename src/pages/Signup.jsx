@@ -42,7 +42,7 @@ const Signup = () => {
             <UserPlus className="text-blue-500 group-hover:rotate-12 transition-transform" size={40} />
           </div>
           <h1 className="text-4xl font-black text-white tracking-tight mb-2">Create Account</h1>
-          <p className="text-slate-400">Join DigiCoders CRM as an administrator.</p>
+          <p className="text-slate-400">Join Next Lead CRM as an administrator.</p>
         </div>
 
         <div className="bg-[#0f172a] border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl shadow-blue-500/5">

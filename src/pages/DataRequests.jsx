@@ -110,9 +110,17 @@ const DataRequests = ({ user }) => {
             <tbody className="divide-y divide-slate-50">
               {loading ? (
                 <tr><td colSpan="5" className="text-center py-20 text-slate-400 font-medium italic">Synchronizing requests...</td></tr>
-              ) : requests.length === 0 ? (
-                <tr><td colSpan="5" className="text-center py-20 text-slate-400 font-medium">No requests in queue.</td></tr>
-              ) : requests.map((req) => (
+              ) : requests.filter(req => {
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                return new Date(req.createdAt) > oneWeekAgo;
+              }).length === 0 ? (
+                <tr><td colSpan="5" className="text-center py-20 text-slate-400 font-medium">No active requests (last 7 days).</td></tr>
+              ) : requests.filter(req => {
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                return new Date(req.createdAt) > oneWeekAgo;
+              }).map((req) => (
                 <tr key={req._id} className="hover:bg-slate-50/50 transition-all group">
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-3">
